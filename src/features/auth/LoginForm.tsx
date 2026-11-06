@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input'
 import { PasswordInput } from '@/components/ui/PasswordInput'
 import { DASHBOARD_PATH } from '@/config/routes'
 import { useAuthModal } from '@/hooks/useAuthModal'
+import { useSession } from '@/hooks/useSession'
 import { hasErrors, isEmail, type Errors } from '@/lib/validation'
 import { services, type ServiceError } from '@/services'
 import type { SignInInput } from '@/types/user'
@@ -24,6 +25,7 @@ function validate(values: SignInInput): Errors<SignInInput> {
 export function LoginForm() {
   const navigate = useNavigate()
   const { openAuth, closeAuth } = useAuthModal()
+  const { signedIn } = useSession()
   const [values, setValues] = useState<SignInInput>({ email: '', password: '', remember: true })
   const [errors, setErrors] = useState<Errors<SignInInput>>({})
   const [submitting, setSubmitting] = useState(false)
@@ -47,6 +49,8 @@ export function LoginForm() {
     const result = await services.auth.signIn({ ...values, email: values.email.trim() })
     setSubmitting(false)
     if (result.ok) {
+      // Store the session first: the dashboard guard must not see a signed-out state and bounce back to login.
+      signedIn(result.data)
       closeAuth()
       navigate(DASHBOARD_PATH[result.data.user.role])
     } else {

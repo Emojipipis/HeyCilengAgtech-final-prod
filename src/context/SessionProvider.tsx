@@ -29,9 +29,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setSession(null)
   }, [])
 
+  const signedIn = useCallback((next: Session) => {
+    setSession(next)
+    setRestored(true)
+  }, [])
+
   const value = useMemo(
-    () => ({ session, status: !restored ? ('loading' as const) : session ? ('authenticated' as const) : ('anonymous' as const), signOut }),
-    [session, restored, signOut],
+    () => ({ session, status: !restored ? ('loading' as const) : session ? ('authenticated' as const) : ('anonymous' as const), signOut, signedIn }),
+    [session, restored, signOut, signedIn],
   )
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>

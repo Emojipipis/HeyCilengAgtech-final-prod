@@ -9,7 +9,7 @@ import { Pagination } from '@/components/ui/Pagination'
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui/States'
 import { Tabs } from '@/components/ui/Tabs'
 import { NotificationItem } from '@/features/notifications/NotificationItem'
-import { announceNotificationsChanged } from '@/features/notifications/notificationEvents'
+import { announceNotificationsChanged, useNotificationsChanged } from '@/features/notifications/notificationEvents'
 import { NOTIFICATION_META } from '@/features/notifications/notificationMeta'
 import { useAsync } from '@/hooks/useAsync'
 import { usePagination } from '@/hooks/usePagination'
@@ -36,6 +36,8 @@ export function NotificationsPage() {
   const { user } = useViewer()
   // Keyed by account: buyer and seller areas share this page component.
   const { data, loading, error, reload, setData } = useAsync(() => services.notifications.list(), `notifications-${user.id}`)
+  // New notifications arrive live; read-state changes elsewhere also refresh the list.
+  useNotificationsChanged(reload)
   const [view, setView] = useState<'all' | 'unread'>('all')
   const [categories, setCategories] = useState<NotificationCategory[]>([])
 

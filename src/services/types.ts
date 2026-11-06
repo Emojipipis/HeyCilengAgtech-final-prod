@@ -148,6 +148,8 @@ export interface NotificationService {
   list(): Promise<ServiceResult<AppNotification[]>>
   markRead(id: string): Promise<ServiceResult<null>>
   markAllRead(): Promise<ServiceResult<null>>
+  /** Calls `onNew` when a notification arrives for the signed-in user. Returns an unsubscribe function. Optional: demo data has no live feed. */
+  subscribe?(onNew: () => void): () => void
 }
 
 export interface ProfileService {

@@ -6,6 +6,8 @@ export interface SessionContextValue {
   session: Session | null
   status: 'loading' | 'authenticated' | 'anonymous'
   signOut: () => Promise<void>
+  /** Record a session the login form just obtained, so guarded routes see it before the auth listener catches up. */
+  signedIn: (session: Session) => void
 }
 
 export const SessionContext = createContext<SessionContextValue | null>(null)

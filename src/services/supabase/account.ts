@@ -37,6 +37,28 @@ export const supabaseNotificationService: NotificationService = {
     const { error } = await supabase.from('notifications').update({ read: true }).eq('user_id', uid).eq('read', false)
     return error ? fail(error) : ok(null)
   },
+  subscribe(onNew) {
+    let channel: ReturnType<typeof supabase.channel> | null = null
+    let closed = false
+    void supabase.auth.getSession().then(async ({ data }) => {
+      const uid = data.session?.user.id
+      if (!uid || closed) return
+      // After a page reload the socket can connect before the restored session reaches it; without the
+      // user's token, RLS filters out every row. Hand it over explicitly before joining.
+      await supabase.realtime.setAuth(data.session!.access_token)
+      if (closed) return
+      // RLS limits the stream to this user's rows; the filter just avoids needless events.
+      channel = supabase
+        // Unique per subscriber: several views may listen at once, and channel names must not clash.
+        .channel(`notifications:${uid}:${crypto.randomUUID()}`)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` }, () => onNew())
+        .subscribe()
+    })
+    return () => {
+      closed = true
+      if (channel) void supabase.removeChannel(channel)
+    }
+  },
 }
 
 /* ------------------------------------------------------------------ Profiles */

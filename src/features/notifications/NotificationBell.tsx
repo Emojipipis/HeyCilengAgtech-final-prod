@@ -1,5 +1,5 @@
 import { Bell, CheckCheck } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { EmptyState, LoadingState } from '@/components/ui/States'
 import { useAsync } from '@/hooks/useAsync'
@@ -10,7 +10,7 @@ import { cn } from '@/lib/cn'
 import { services } from '@/services'
 import type { AppNotification } from '@/types/notification'
 import { NotificationItem } from './NotificationItem'
-import { useNotificationsChanged } from './notificationEvents'
+import { announceNotificationsChanged, useNotificationsChanged } from './notificationEvents'
 
 export function NotificationBell() {
   const navigate = useNavigate()
@@ -23,6 +23,8 @@ export function NotificationBell() {
   const { data, loading, error, setData, reload } = useAsync(() => services.notifications.list(), `${user.id}|${location.key}|${location.pathname}`)
 
   useNotificationsChanged(reload)
+  // Live updates where the backend supports them (tells the bell and the notifications page).
+  useEffect(() => services.notifications.subscribe?.(announceNotificationsChanged), [user.id])
   useClickOutside([buttonRef, panelRef], () => setOpen(false), open)
   useEscapeKey(() => {
     setOpen(false)
