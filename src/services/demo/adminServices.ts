@@ -252,10 +252,27 @@ export const demoAuditService: AuditService = {
 }
 
 /** Paystack isn't integrated: there are no payment records, real or fake. */
+// Demo mode never simulates payments: no fake transactions or payment records.
 export const demoPaymentService: PaymentService = {
   async listPayments() {
     await delay(300)
     return notConnected('Payment records')
+  },
+  async startCheckout() {
+    await delay(300)
+    return notConnected('Online payment')
+  },
+  async verifyPayment() {
+    await delay(300)
+    return notConnected('Online payment')
+  },
+  async markPayoutPaid() {
+    await delay(300)
+    return notConnected('Seller payouts')
+  },
+  async markRefunded() {
+    await delay(300)
+    return notConnected('Refunds')
   },
 }
 

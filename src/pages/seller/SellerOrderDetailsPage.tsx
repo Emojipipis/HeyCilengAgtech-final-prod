@@ -1,4 +1,4 @@
-import { ArrowLeft, CreditCard, LifeBuoy, Lock, PackageSearch } from 'lucide-react'
+import { ArrowLeft, LifeBuoy, Lock, PackageSearch } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Alert } from '@/components/ui/Alert'
@@ -15,6 +15,7 @@ import { getStatusMeta } from '@/config/statuses'
 import { StockBar } from '@/features/listings/StockBar'
 import { DeliveryDetails } from '@/features/orders/DeliveryDetails'
 import { OrderTimeline } from '@/features/orders/OrderTimeline'
+import { SellerPaymentCard } from '@/features/payments/SellerPaymentCard'
 import { useAsync } from '@/hooks/useAsync'
 import { useToast } from '@/hooks/useToast'
 import { formatCurrency, formatDate, formatDateTime, formatQuantity, formatUnitPrice } from '@/lib/format'
@@ -196,15 +197,7 @@ export function SellerOrderDetailsPage() {
 
           <DeliveryDetails order={o} audience="seller" />
 
-          <Card>
-            <CardBody className="flex gap-3">
-              <CreditCard className="mt-0.5 size-5 shrink-0 text-subtle" aria-hidden="true" />
-              <div className="text-sm">
-                <p className="font-semibold">Payouts not available yet</p>
-                <p className="mt-1 text-muted">Paystack payments and payouts will be added in a future release. No payment has been taken for this order.</p>
-              </div>
-            </CardBody>
-          </Card>
+          <SellerPaymentCard order={o} />
 
           <Card>
             <CardBody className="flex gap-3">

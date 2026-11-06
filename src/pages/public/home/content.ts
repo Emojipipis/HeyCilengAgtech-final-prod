@@ -114,7 +114,7 @@ export const FAQS: { id: string; question: string; answer: string }[] = [
     id: 'payments',
     question: 'How do payments work?',
     answer:
-      'Online payments via Paystack are planned and will be introduced in a later release. Until then, no payments are processed on the platform.',
+      'Buyers pay HeyCileng securely through Paystack once the seller has accepted the order and any delivery fee is confirmed. HeyCileng then arranges dispatch or collection, and pays the seller after the order is complete, minus HeyCileng’s commission.',
   },
   {
     id: 'fees',

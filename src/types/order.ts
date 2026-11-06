@@ -35,8 +35,22 @@ export interface Delivery {
   history: DeliveryUpdate[]
 }
 
-/** Payment processing (Paystack) is not integrated yet. */
-export type PaymentStatus = 'integration_pending'
+/** Buyer payment through Paystack. Set only by the backend after Paystack confirms the transaction. */
+export type PaymentStatus = 'unpaid' | 'paid' | 'refund_pending' | 'refunded'
+
+/** HeyCileng pays sellers manually after completion (order value minus commission and any seller-paid delivery fee). */
+export type PayoutStatus = 'not_due' | 'due' | 'paid'
+
+export interface OrderPayment {
+  status: PaymentStatus
+  paidAt?: string
+  amountPaid?: number
+  /** Commission rate (%) recorded when the buyer paid. */
+  commissionRate?: number
+  payoutStatus: PayoutStatus
+  payoutReference?: string
+  payoutPaidAt?: string
+}
 
 export interface Order {
   id: string
@@ -64,7 +78,7 @@ export interface Order {
   buyerNote?: string
   status: OrderStatus
   delivery: Delivery | null
-  payment: { status: PaymentStatus }
+  payment: OrderPayment
   timeline: OrderEvent[]
   createdAt: string
   updatedAt: string

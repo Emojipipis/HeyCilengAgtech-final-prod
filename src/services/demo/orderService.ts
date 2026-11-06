@@ -58,7 +58,7 @@ export const demoOrderService: OrderService = {
       buyerNote: input.buyerNote,
       status: 'pending',
       delivery: input.fulfilment === 'delivery' ? { status: 'not_assigned', history: [] } : null,
-      payment: { status: 'integration_pending' },
+      payment: { status: 'unpaid', payoutStatus: 'not_due' },
       timeline: [
         {
           id: nextId('demo-evt'),

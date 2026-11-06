@@ -94,7 +94,7 @@ function DisputeForm({ dispute, onClose, onSaved }: { dispute: Dispute; onClose:
         <Textarea label={status === 'resolved' ? 'Resolution' : 'Why it was rejected'} required rows={3} value={resolution} onChange={(e) => setResolution(e.target.value)} hint="Shared with buyer and seller through HeyCileng support." />
       )}
       <Textarea label="Add internal note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} hint="Visible to HeyCileng staff only." />
-      <p className="text-xs text-subtle">Refunds and compensation can’t be processed on the platform until payments are integrated.</p>
+      <p className="text-xs text-subtle">To refund a paid order, cancel it — it then appears under Payments → Refunds owed. Refund in Paystack and record it on the order.</p>
       {error && <Alert tone="error">{error.message}</Alert>}
       <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:justify-end">
         <Button variant="outline" onClick={onClose} disabled={saving}>

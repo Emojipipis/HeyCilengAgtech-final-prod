@@ -117,15 +117,13 @@ function SettingsForm({ initial, onSaved }: { initial: PlatformSettings; onSaved
               <Input label="Commission rate (%)" inputMode="decimal" value={String(values.commission.ratePercent)} onChange={(e) => update('commission', { ratePercent: num(e.target.value) })} hint="Between 0% and 30%." />
               <Select
                 label="Charged to"
-                options={[
-                  { value: 'seller', label: 'Seller (deducted from payout)' },
-                  { value: 'buyer', label: 'Buyer (added to the order)' },
-                ]}
+                // Payments deduct commission from the seller's payout; charging buyers isn't supported yet.
+                options={[{ value: 'seller', label: 'Seller (deducted from payout)' }]}
                 value={values.commission.chargedTo}
                 onChange={(e) => update('commission', { chargedTo: e.target.value as 'seller' | 'buyer' })}
               />
             </div>
-            <p className="text-xs text-subtle">The rate is shown to users before they commit. It will apply once payments are live; nothing is charged today.</p>
+            <p className="text-xs text-subtle">The rate is shown to users before they commit. It’s recorded on each order when the buyer pays and deducted from the seller’s payout.</p>
           </Group>
         )}
 

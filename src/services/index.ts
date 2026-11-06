@@ -69,6 +69,7 @@ import {
   supabaseSupportService,
 } from './supabase/account'
 import { supabaseAuthService } from './supabase/authService'
+import { supabasePaymentService } from './supabase/payments'
 import { supabaseMarketplaceService, supabaseMatchingService, supabaseRequirementService } from './supabase/marketplace'
 import {
   supabaseAdminOrderService,
@@ -140,8 +141,8 @@ export const services: {
   settings: pick(demoSettingsService, supabaseSettingsService, 'Platform settings'),
   audit: pick(demoAuditService, supabaseAuditService, 'Audit logs'),
   insights: pick(demoAdminInsightsService, supabaseInsightsService, 'Reports'),
-  // Paystack isn't integrated in any mode.
-  payments: demoPaymentService,
+  // Paystack: live through the backend; never simulated in demo mode.
+  payments: pick(demoPaymentService, supabasePaymentService, 'Payments'),
   platformConfig: pick(demoPlatformConfigService, supabasePlatformConfigService, 'Platform configuration'),
 }
 

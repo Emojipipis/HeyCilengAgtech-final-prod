@@ -290,7 +290,7 @@ export const DEMO_ORDERS: Order[] = seeds.map((seed, index) => {
       ...seed.delivery,
       partnerId: seed.delivery.partnerName ? `demo-partner-${seed.delivery.partnerName.slice(-1).toLowerCase()}` : undefined,
     },
-    payment: { status: 'integration_pending' },
+    payment: { status: 'unpaid', payoutStatus: 'not_due' },
     timeline: seed.timeline,
     createdAt: seed.createdAt,
     updatedAt: seed.timeline[seed.timeline.length - 1].at,

@@ -21,6 +21,7 @@ export function AdminCommissionsPage() {
   if (error || !data) return <ErrorState description={error?.message} onRetry={reload} />
 
   const total = data.records.reduce((sum, r) => sum + r.amount, 0)
+  const collected = data.records.filter((r) => r.status === 'collected').reduce((sum, r) => sum + r.amount, 0)
   const value = data.records.reduce((sum, r) => sum + r.orderValue, 0)
 
   const columns: Column<CommissionEstimate>[] = [
@@ -38,7 +39,11 @@ export function AdminCommissionsPage() {
     { key: 'value', header: 'Order value', align: 'right', render: (r) => <span className="tabular-nums">{formatCurrency(r.orderValue)}</span> },
     { key: 'rate', header: 'Rate', align: 'right', hideOnMobile: true, render: (r) => <span className="tabular-nums">{r.ratePercent}%</span> },
     { key: 'amount', header: 'Commission', align: 'right', render: (r) => <span className="font-semibold tabular-nums">{formatCurrency(r.amount)}</span> },
-    { key: 'status', header: 'Status', render: () => <Badge tone="neutral">Not collected</Badge> },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (r) => (r.status === 'collected' ? <Badge tone="success">Collected</Badge> : <Badge tone="neutral">Not collected</Badge>),
+    },
   ]
 
   return (
@@ -54,14 +59,15 @@ export function AdminCommissionsPage() {
         }
       />
 
-      <Alert tone="info" title="Estimates only — nothing has been collected" className="mb-6">
-        These figures apply the current commission rate to completed orders. Commission will be collected through payments once Paystack is integrated; until then they are not revenue and no money has moved.
+      <Alert tone="info" title="How commission is collected" className="mb-6">
+        Buyers pay the full order value to HeyCileng through Paystack. HeyCileng keeps the commission — at the rate recorded when the buyer paid — and transfers the rest to the seller after completion.
+        Completed orders that were never paid are shown as estimates at the current rate.
       </Alert>
 
       <section aria-label="Commission summary" className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard label="Commission rate" value={`${data.ratePercent}%`} icon={<Coins />} hint="Of completed order value" />
         <StatCard label="Completed order value" value={formatCurrency(value)} tone="neutral" hint={`${data.records.length} orders`} />
-        <StatCard label="Estimated commission" value={formatCurrency(total)} tone="accent" hint="Not collected" />
+        <StatCard label="Commission collected" value={formatCurrency(collected)} tone="accent" hint={total > collected ? `${formatCurrency(total - collected)} on unpaid orders (estimate)` : 'Through Paystack payments'} />
       </section>
 
       <DataTable

@@ -302,7 +302,16 @@ export interface AdminInsightsService {
 
 /** Paystack payments — not integrated yet. */
 export interface PaymentService {
+  /** Admin: every Paystack transaction attempt. */
   listPayments(): Promise<ServiceResult<PaymentRecord[]>>
+  /** Buyer: start Paystack checkout for an order. Redirect the browser to `authorizationUrl`. */
+  startCheckout(orderId: string): Promise<ServiceResult<{ authorizationUrl: string; reference: string }>>
+  /** Buyer: confirm a payment after returning from Paystack (the webhook may already have done it). */
+  verifyPayment(reference: string): Promise<ServiceResult<{ status: 'paid' | 'failed' | 'pending' | 'refund_needed'; orderId: string }>>
+  /** Admin: record that the seller's payout was transferred (outside the app). */
+  markPayoutPaid(orderId: string, transferReference: string): Promise<ServiceResult<null>>
+  /** Admin: record that a refund was issued in Paystack. */
+  markRefunded(orderId: string, note: string): Promise<ServiceResult<null>>
 }
 
 /** Settings that ordinary users may read (a safe subset of PlatformSettings). */

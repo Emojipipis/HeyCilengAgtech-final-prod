@@ -205,7 +205,7 @@ function RequestOrderForm({ item, onClose, ordersPath, defaultQuantity }: Omit<R
         </div>
         <p className="mt-1 text-xs text-subtle">
           {fulfilment === 'delivery' ? 'Delivery fee and who pays it are confirmed by HeyCileng after the seller accepts. ' : ''}
-          No payment is taken now — online payments aren’t available yet.
+          No payment is taken now. You’ll pay HeyCileng through Paystack after the seller accepts.
         </p>
       </div>
 

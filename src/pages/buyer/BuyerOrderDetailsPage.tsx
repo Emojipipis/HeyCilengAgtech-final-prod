@@ -1,4 +1,4 @@
-import { ArrowLeft, CreditCard, Info, LifeBuoy, PackageSearch } from 'lucide-react'
+import { ArrowLeft, Info, LifeBuoy, PackageSearch } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Alert } from '@/components/ui/Alert'
@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { CATEGORY_BY_ID } from '@/config/catalog'
 import { getStatusMeta } from '@/config/statuses'
 import { DeliveryDetails } from '@/features/orders/DeliveryDetails'
+import { BuyerPaymentCard } from '@/features/payments/BuyerPaymentCard'
 import { OrderTimeline } from '@/features/orders/OrderTimeline'
 import { useAsync } from '@/hooks/useAsync'
 import { useToast } from '@/hooks/useToast'
@@ -50,7 +51,8 @@ export function BuyerOrderDetailsPage() {
   }
 
   const meta = getStatusMeta('order', order.status)
-  const cancellable = order.status === 'pending' || order.status === 'accepted'
+  // Paid orders are cancelled through HeyCileng support so a refund can be arranged.
+  const cancellable = (order.status === 'pending' || order.status === 'accepted') && order.payment.status === 'unpaid'
 
   const cancel = async () => {
     setCancelling(true)
@@ -136,18 +138,7 @@ export function BuyerOrderDetailsPage() {
         <div className="space-y-6">
           <DeliveryDetails order={order} />
 
-          <Card>
-            <CardHeader title="Payment" />
-            <CardBody className="flex gap-3">
-              <CreditCard className="mt-0.5 size-5 shrink-0 text-subtle" aria-hidden="true" />
-              <div className="text-sm">
-                <p className="font-semibold">Online payment not available yet</p>
-                <p className="mt-1 text-muted">
-                  Paystack payments will be added in a future release. No payment has been taken for this order on HeyCileng.
-                </p>
-              </div>
-            </CardBody>
-          </Card>
+          <BuyerPaymentCard order={order} onChanged={reload} />
 
           <Card>
             <CardBody className="flex gap-3">

@@ -99,6 +99,13 @@ export interface OrderRow {
   delivery: Delivery | null
   created_at: string
   updated_at: string
+  payment_status: Order['payment']['status']
+  paid_at: string | null
+  amount_paid?: number | null
+  commission_rate: number | null
+  payout_status: Order['payment']['payoutStatus']
+  payout_reference: string | null
+  payout_paid_at: string | null
 }
 
 export interface OrderEventRow {
@@ -231,7 +238,15 @@ export function toOrder(r: OrderRow, events: OrderEventRow[]): Order {
     buyerNote: r.buyer_note ?? undefined,
     status: r.status,
     delivery: r.delivery ? { ...r.delivery, fee: r.delivery.fee === undefined || r.delivery.fee === null ? undefined : num(r.delivery.fee), history: r.delivery.history ?? [] } : null,
-    payment: { status: 'integration_pending' },
+    payment: {
+      status: r.payment_status,
+      paidAt: r.paid_at ?? undefined,
+      amountPaid: r.amount_paid ?? undefined,
+      commissionRate: r.commission_rate ?? undefined,
+      payoutStatus: r.payout_status,
+      payoutReference: r.payout_reference ?? undefined,
+      payoutPaidAt: r.payout_paid_at ?? undefined,
+    },
     timeline: events
       .filter((e) => e.order_id === r.id)
       .map((e) => ({ id: e.id, at: e.at, status: e.status ?? undefined, title: e.title, description: e.description ?? undefined, actor: e.actor })),

@@ -1,0 +1,9 @@
+# Supabase CLI settings used when deploying edge functions.
+project_id = "heycileng-agtech"
+
+[functions.paystack]
+verify_jwt = true
+
+# Paystack calls this directly; requests are authenticated by Paystack's signature instead.
+[functions.paystack-webhook]
+verify_jwt = false

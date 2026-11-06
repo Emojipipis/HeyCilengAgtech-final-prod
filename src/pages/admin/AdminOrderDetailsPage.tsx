@@ -17,6 +17,7 @@ import { AssignDeliveryModal } from '@/features/logistics/AssignDeliveryModal'
 import { UpdateDeliveryModal } from '@/features/logistics/UpdateDeliveryModal'
 import { DeliveryDetails } from '@/features/orders/DeliveryDetails'
 import { OrderTimeline } from '@/features/orders/OrderTimeline'
+import { AdminPaymentCard } from '@/features/payments/AdminPaymentCard'
 import { useAsync } from '@/hooks/useAsync'
 import { useToast } from '@/hooks/useToast'
 import { formatCurrency, formatDate, formatDateTime, formatQuantity, formatUnitPrice } from '@/lib/format'
@@ -173,7 +174,6 @@ export function AdminOrderDetailsPage() {
                 <span className="text-sm text-muted">Material value</span>
                 <span className="font-display text-2xl font-bold tabular-nums">{formatCurrency(o.subtotal)}</span>
               </div>
-              <p className="mt-1 text-xs text-subtle">Payments aren’t processed on the platform yet (Paystack integration pending).</p>
             </CardBody>
           </Card>
 
@@ -187,6 +187,8 @@ export function AdminOrderDetailsPage() {
 
         <div className="space-y-6">
           <DeliveryDetails order={o} audience="admin" action={deliveryAction} />
+
+          <AdminPaymentCard order={o} onChanged={order.reload} />
 
           {stock.data && (
             <Card>

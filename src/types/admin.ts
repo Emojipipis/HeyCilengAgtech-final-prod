@@ -94,18 +94,26 @@ export interface PlatformSettings {
   }
 }
 
-/** Payment record shape for the future Paystack integration. No records exist until it is built. */
+/** A Paystack transaction attempt for an order. Written only by the backend. */
 export interface PaymentRecord {
   id: string
+  orderId: string
   orderReference: string
+  buyerName: string
   amount: number
-  status: 'pending' | 'successful' | 'failed' | 'refunded'
+  /** initialized = checkout started, not completed (yet). */
+  status: 'initialized' | 'successful' | 'failed'
   provider: 'paystack'
-  providerReference: string
+  /** Our reference, also used by Paystack. */
+  reference: string
+  channel?: string
+  paidAt?: string
+  /** Backend note, e.g. an amount mismatch or a refund that's needed. */
+  note?: string
   createdAt: string
 }
 
-/** Commission owed on a completed order, estimated from the configured rate. Not collected until payments exist. */
+/** Commission on a completed order: collected through the buyer's Paystack payment, or an estimate if unpaid. */
 export interface CommissionEstimate {
   orderId: string
   orderReference: string
@@ -114,7 +122,7 @@ export interface CommissionEstimate {
   orderValue: number
   ratePercent: number
   amount: number
-  status: 'not_collected'
+  status: 'collected' | 'not_collected'
 }
 
 export interface AdminOverview {

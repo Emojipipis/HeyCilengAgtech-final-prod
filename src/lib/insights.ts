@@ -150,16 +150,21 @@ export function computeCommissions(data: InsightsData): { ratePercent: number; r
   const rate = data.settings.commission.ratePercent
   const records: CommissionEstimate[] = data.orders
     .filter((o) => o.status === 'completed')
-    .map((o) => ({
-      orderId: o.id,
-      orderReference: o.reference,
-      completedAt: completedAt(o),
-      sellerBusinessName: o.listing.sellerBusinessName,
-      orderValue: o.subtotal,
-      ratePercent: rate,
-      amount: Math.round((o.subtotal * rate) / 100),
-      status: 'not_collected' as const,
-    }))
+    .map((o) => {
+      // Paid orders use the rate recorded at payment; anything else is an estimate at today's rate.
+      const collected = o.payment.status === 'paid'
+      const ratePercent = collected ? (o.payment.commissionRate ?? rate) : rate
+      return {
+        orderId: o.id,
+        orderReference: o.reference,
+        completedAt: completedAt(o),
+        sellerBusinessName: o.listing.sellerBusinessName,
+        orderValue: o.subtotal,
+        ratePercent,
+        amount: Math.round(o.subtotal * ratePercent) / 100,
+        status: collected ? ('collected' as const) : ('not_collected' as const),
+      }
+    })
     .sort((a, b) => b.completedAt.localeCompare(a.completedAt))
   return ({ ratePercent: rate, records })
 }
