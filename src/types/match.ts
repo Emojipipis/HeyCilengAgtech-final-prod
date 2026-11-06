@@ -8,7 +8,7 @@ export interface CriterionScore {
   /** 0–1 */
   score: number
   status: CriterionStatus
-  /** Short explanation, e.g. "8 t available of 5 t needed". */
+  /** Short explanation, e.g. "8,000 kg available of 5,000 kg needed". */
   detail: string
 }
 

@@ -44,7 +44,7 @@ function fromListing(listing: Listing | undefined, defaults: { state: string; ar
     category: listing?.category ?? '',
     description: listing?.description ?? '',
     listedQuantity: listing ? String(listing.listedQuantity) : '',
-    unit: listing?.unit ?? 'tonne',
+    unit: listing?.unit ?? 'kg',
     minOrderQuantity: listing ? String(listing.minOrderQuantity) : '',
     pricePerUnit: listing ? String(listing.pricePerUnit) : '',
     state: listing?.location.state ?? defaults.state,

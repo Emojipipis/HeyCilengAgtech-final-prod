@@ -45,7 +45,7 @@ function fromRequirement(r?: Requirement): FormValues {
     title: r?.title ?? '',
     category: r?.category ?? '',
     quantity: r ? String(r.quantity) : '',
-    unit: r?.unit ?? 'tonne',
+    unit: r?.unit ?? 'kg',
     budgetMin: r?.budgetMin !== undefined ? String(r.budgetMin) : '',
     budgetMax: r ? String(r.budgetMax) : '',
     preferredLocation: r?.preferredLocation ?? '',

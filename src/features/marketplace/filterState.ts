@@ -28,9 +28,9 @@ export function toListingFilters(filters: FilterState, query: string, sort: List
     query: query.trim() || undefined,
     categories: filters.categories,
     states: filters.states,
-    minPricePerTonne: num(filters.minPrice),
-    maxPricePerTonne: num(filters.maxPrice),
-    minQuantityTonnes: num(filters.minQuantity),
+    minPricePerKg: num(filters.minPrice),
+    maxPricePerKg: num(filters.maxPrice),
+    minQuantityKg: num(filters.minQuantity),
     sort,
   }
 }

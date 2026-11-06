@@ -185,7 +185,7 @@ export function DesignSystemPage() {
         <Block title="Cards and stats">
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Active listings" value="12" icon={<Package />} hint="Sample value" />
-            <StatCard label="Available stock" value="48 t" icon={<Boxes />} tone="accent" hint="Sample value" />
+            <StatCard label="Available stock" value="48,000 kg" icon={<Boxes />} tone="accent" hint="Sample value" />
             <StatCard label="In transit" value="3" icon={<Truck />} tone="info" hint="Sample value" />
             <Card>
               <CardHeader title="Card" description="Header, body, footer" />

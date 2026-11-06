@@ -10,7 +10,7 @@ import { StockBar } from '@/features/listings/StockBar'
 import { useAsync } from '@/hooks/useAsync'
 import { formatQuantity } from '@/lib/format'
 import { availableQuantity } from '@/lib/inventory'
-import { formatTonnes, stockTotalsInTonnes } from '@/lib/stock'
+import { formatKg, stockTotalsInKg } from '@/lib/stock'
 import { services } from '@/services'
 import type { Listing } from '@/types/listing'
 
@@ -18,7 +18,7 @@ export function InventoryPage() {
   const navigate = useNavigate()
   const { data, loading, error, reload } = useAsync(() => services.sellerListings.listMine(), 'seller-listings')
   const listings = data ?? []
-  const totals = stockTotalsInTonnes(listings)
+  const totals = stockTotalsInKg(listings)
 
   const qty = (value: number, l: Listing) => <span className="tabular-nums">{formatQuantity(value, l.unit)}</span>
   const columns: Column<Listing>[] = [
@@ -59,10 +59,10 @@ export function InventoryPage() {
       </Card>
 
       <section aria-label="Stock totals" className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Listed" value={loading ? '—' : formatTonnes(totals.listed)} icon={<Boxes />} tone="neutral" />
-        <StatCard label="Reserved" value={loading ? '—' : formatTonnes(totals.reserved)} tone="accent" />
-        <StatCard label="Sold" value={loading ? '—' : formatTonnes(totals.sold)} tone="neutral" />
-        <StatCard label="Available" value={loading ? '—' : formatTonnes(totals.available)} tone="brand" />
+        <StatCard label="Listed" value={loading ? '—' : formatKg(totals.listed)} icon={<Boxes />} tone="neutral" />
+        <StatCard label="Reserved" value={loading ? '—' : formatKg(totals.reserved)} tone="accent" />
+        <StatCard label="Sold" value={loading ? '—' : formatKg(totals.sold)} tone="neutral" />
+        <StatCard label="Available" value={loading ? '—' : formatKg(totals.available)} tone="brand" />
       </section>
 
       {error ? (
@@ -78,7 +78,7 @@ export function InventoryPage() {
             onRowClick={(l) => navigate(`/seller/listings/${l.id}/edit`)}
             empty={<EmptyState compact icon={<Boxes />} title="No listings yet" />}
           />
-          <p className="mt-2 text-xs text-subtle">Totals are tonne-equivalents (50 kg per bag). Rows show each listing’s own unit.</p>
+          <p className="mt-2 text-xs text-subtle">Totals are in kg (1 tonne = 1,000 kg, 1 bag = 50 kg). Rows show each listing’s own unit.</p>
         </>
       )}
     </>

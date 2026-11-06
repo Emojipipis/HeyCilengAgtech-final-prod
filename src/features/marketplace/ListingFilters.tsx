@@ -66,17 +66,17 @@ export function ListingFilters({ value, onChange }: { value: FilterState; onChan
         </div>
       </FilterGroup>
 
-      <FilterGroup title={`Price per tonne (${PLATFORM.currency})`}>
+      <FilterGroup title={`Price per kg (${PLATFORM.currency})`}>
         <div className="grid grid-cols-2 gap-3">
           <Input label="Min" inputMode="numeric" placeholder="0" value={value.minPrice} onChange={(e) => set('minPrice', numeric(e.target.value))} />
           <Input label="Max" inputMode="numeric" placeholder="Any" value={value.maxPrice} onChange={(e) => set('maxPrice', numeric(e.target.value))} />
         </div>
-        <p className="mt-2 text-xs text-subtle">Prices in kg or 50 kg bags are converted to a per-tonne equivalent.</p>
+        <p className="mt-2 text-xs text-subtle">Prices in tonnes or 50 kg bags are converted to a per-kg equivalent.</p>
       </FilterGroup>
 
       <FilterGroup title="Quantity">
         <Input
-          label="Minimum available (tonnes)"
+          label="Minimum available (kg)"
           inputMode="decimal"
           placeholder="Any"
           value={value.minQuantity}

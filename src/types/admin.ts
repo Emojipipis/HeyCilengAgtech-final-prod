@@ -138,7 +138,7 @@ export interface AdminReports {
   ordersByStatus: { status: string; count: number }[]
   completedValueByMonth: { month: string; value: number }[]
   supplyDemandByCategory: { category: string; listings: number; requirements: number }[]
-  stockTonnes: { listed: number; reserved: number; sold: number; available: number }
+  stockKg: { listed: number; reserved: number; sold: number; available: number }
 }
 
 export interface AdminMatchmaking {

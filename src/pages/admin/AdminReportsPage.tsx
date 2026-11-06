@@ -7,7 +7,7 @@ import { Bars, ChartFrame } from '@/features/admin/charts'
 import { useAsync } from '@/hooks/useAsync'
 import { useViewer } from '@/hooks/useSession'
 import { formatCurrency } from '@/lib/format'
-import { formatTonnes } from '@/lib/stock'
+import { formatKg } from '@/lib/stock'
 import { services } from '@/services'
 
 const MONTH = new Intl.DateTimeFormat('en-NG', { month: 'short', year: 'numeric' })
@@ -46,10 +46,10 @@ export function AdminReportsPage() {
       )}
 
       <section aria-label="Stock across the marketplace" className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Listed stock" value={formatTonnes(data.stockTonnes.listed)} tone="neutral" hint="Tonne-equivalent" />
-        <StatCard label="Available" value={formatTonnes(data.stockTonnes.available)} hint="Listed − reserved − sold" />
-        <StatCard label="Reserved" value={formatTonnes(data.stockTonnes.reserved)} tone="accent" hint="Accepted, not yet completed" />
-        <StatCard label="Sold" value={formatTonnes(data.stockTonnes.sold)} tone="info" hint="Completed orders" />
+        <StatCard label="Listed stock" value={formatKg(data.stockKg.listed)} tone="neutral" hint="All units converted to kg" />
+        <StatCard label="Available" value={formatKg(data.stockKg.available)} hint="Listed − reserved − sold" />
+        <StatCard label="Reserved" value={formatKg(data.stockKg.reserved)} tone="accent" hint="Accepted, not yet completed" />
+        <StatCard label="Sold" value={formatKg(data.stockKg.sold)} tone="info" hint="Completed orders" />
       </section>
 
       <div className="grid gap-6 xl:grid-cols-2 *:min-w-0">

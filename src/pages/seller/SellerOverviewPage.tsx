@@ -12,7 +12,7 @@ import { eventIcon } from '@/features/orders/timelineIcons'
 import { useAsync } from '@/hooks/useAsync'
 import { useViewer } from '@/hooks/useSession'
 import { formatQuantity, formatRelative } from '@/lib/format'
-import { formatTonnes, stockTotalsInTonnes } from '@/lib/stock'
+import { formatKg, stockTotalsInKg } from '@/lib/stock'
 import { services } from '@/services'
 
 export function SellerOverviewPage() {
@@ -22,7 +22,7 @@ export function SellerOverviewPage() {
   const buyers = useAsync(() => services.matching.potentialBuyers(), 'potential-buyers')
 
   const mine = listings.data ?? []
-  const totals = stockTotalsInTonnes(mine)
+  const totals = stockTotalsInKg(mine)
   const activeCount = mine.filter((l) => l.status === 'active').length
   const pending = (orders.data ?? []).filter((o) => o.status === 'pending')
   const activity = (orders.data ?? [])
@@ -46,11 +46,11 @@ export function SellerOverviewPage() {
 
       <section aria-label="Listing and stock summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Active listings" value={loadingStock ?? activeCount} icon={<Store />} hint={`${mine.length} listings in total`} />
-        <StatCard label="Available stock" value={loadingStock ?? formatTonnes(totals.available)} icon={<Boxes />} tone="info" hint="Listed − reserved − sold" />
-        <StatCard label="Reserved stock" value={loadingStock ?? formatTonnes(totals.reserved)} icon={<Inbox />} tone="accent" hint="Held for accepted orders" />
-        <StatCard label="Sold stock" value={loadingStock ?? formatTonnes(totals.sold)} icon={<PackageCheck />} tone="neutral" hint="Completed orders" />
+        <StatCard label="Available stock" value={loadingStock ?? formatKg(totals.available)} icon={<Boxes />} tone="info" hint="Listed − reserved − sold" />
+        <StatCard label="Reserved stock" value={loadingStock ?? formatKg(totals.reserved)} icon={<Inbox />} tone="accent" hint="Held for accepted orders" />
+        <StatCard label="Sold stock" value={loadingStock ?? formatKg(totals.sold)} icon={<PackageCheck />} tone="neutral" hint="Completed orders" />
       </section>
-      <p className="mt-2 text-xs text-subtle">Stock totals are tonne-equivalents (50 kg per bag) so listings in different units add up.</p>
+      <p className="mt-2 text-xs text-subtle">Stock totals are in kg (1 tonne = 1,000 kg, 1 bag = 50 kg) so listings in different units add up.</p>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.3fr_1fr] *:min-w-0">
         <Card>

@@ -8,9 +8,9 @@ export interface StockTotals {
   available: number
 }
 
-/** Sums stock across listings in tonne-equivalents, so kg, tonne and bag listings add up fairly. */
-export function stockTotalsInTonnes(listings: Listing[]): StockTotals {
-  const t = (value: number, listing: Listing) => convertQuantity(value, listing.unit, 'tonne')
+/** Sums stock across listings in kg, so kg, tonne and bag listings add up fairly. */
+export function stockTotalsInKg(listings: Listing[]): StockTotals {
+  const t = (value: number, listing: Listing) => convertQuantity(value, listing.unit, 'kg')
   return listings.reduce<StockTotals>(
     (acc, l) => ({
       listed: acc.listed + t(l.listedQuantity, l),
@@ -22,4 +22,4 @@ export function stockTotalsInTonnes(listings: Listing[]): StockTotals {
   )
 }
 
-export const formatTonnes = (value: number) => `${(Math.round(value * 10) / 10).toLocaleString('en-NG')} t`
+export const formatKg = (value: number) => `${Math.round(value).toLocaleString('en-NG')} kg`

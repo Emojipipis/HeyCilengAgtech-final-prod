@@ -1,4 +1,4 @@
-import { APPLICATIONS, CATEGORY_BY_ID, QUALITY_TAGS, UNITS } from '@/config/catalog'
+import { APPLICATIONS, CATEGORY_BY_ID, QUALITY_TAGS } from '@/config/catalog'
 import { stateName } from '@/config/locations'
 import { MATCH_WEIGHTS } from '@/config/matching'
 import type { Listing } from '@/types/listing'
@@ -26,7 +26,9 @@ export function scoreMatch(requirement: Requirement, listing: Listing): MatchRes
   const base = { requirementId: requirement.id, listingId: listing.id }
   const reasons: string[] = []
   const warnings: string[] = []
-  const unit = UNITS[requirement.unit].short
+  // Explanations are always in kg, whatever unit the buyer or seller chose.
+  const kg = (q: number) => `${formatNumber(Math.round(convertQuantity(q, requirement.unit, 'kg') * 100) / 100)} kg`
+  const perKg = (p: number) => formatCurrency(Math.round(convertUnitPrice(p, requirement.unit, 'kg') * 100) / 100)
 
   // 1. Material — hard restriction.
   if (listing.category !== requirement.category) {
@@ -58,13 +60,13 @@ export function scoreMatch(requirement: Requirement, listing: Listing): MatchRes
   const quantity = criterion(
     'quantity',
     Math.min(1, ratio),
-    `${formatNumber(Math.round(available * 100) / 100)} ${unit} available of ${formatNumber(requirement.quantity)} ${unit} needed`,
+    `${kg(available)} available of ${kg(requirement.quantity)} needed`,
   )
   if (ratio >= 1) reasons.push('Enough stock available to cover the full quantity.')
   else warnings.push(`Only ${Math.round(ratio * 100)}% of your required quantity is available — this is a partial match.`)
   const minOrder = convertQuantity(listing.minOrderQuantity, listing.unit, requirement.unit)
   if (minOrder > requirement.quantity) {
-    warnings.push(`The seller’s minimum order (${formatNumber(Math.round(minOrder * 100) / 100)} ${unit}) is above your required quantity.`)
+    warnings.push(`The seller’s minimum order (${kg(minOrder)}) is above your required quantity.`)
   }
 
   // 3. Location — straight-line estimate between state centres.
@@ -87,12 +89,12 @@ export function scoreMatch(requirement: Requirement, listing: Listing): MatchRes
   const price = convertUnitPrice(listing.pricePerUnit, listing.unit, requirement.unit)
   let priceScore: CriterionScore
   if (price <= requirement.budgetMax) {
-    priceScore = criterion('price', 1, `${formatCurrency(Math.round(price))} / ${unit} · within budget`)
-    reasons.push(`Priced within your budget at about ${formatCurrency(Math.round(price))} per ${unit}.`)
+    priceScore = criterion('price', 1, `${perKg(price)} / kg · within budget`)
+    reasons.push(`Priced within your budget at about ${perKg(price)} per kg.`)
   } else {
     const over = (price - requirement.budgetMax) / requirement.budgetMax
-    priceScore = criterion('price', 1 - over / 0.3, `${formatCurrency(Math.round(price))} / ${unit} · ${Math.round(over * 100)}% above budget`)
-    warnings.push(`About ${Math.round(over * 100)}% above your maximum budget of ${formatCurrency(requirement.budgetMax)} per ${unit}.`)
+    priceScore = criterion('price', 1 - over / 0.3, `${perKg(price)} / kg · ${Math.round(over * 100)}% above budget`)
+    warnings.push(`About ${Math.round(over * 100)}% above your maximum budget of ${perKg(requirement.budgetMax)} per kg.`)
   }
 
   // 5. Intended application.

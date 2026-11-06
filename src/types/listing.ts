@@ -41,11 +41,11 @@ export interface ListingFilters {
   query?: string
   categories?: CategoryId[]
   states?: string[]
-  /** Price bounds per tonne, so listings sold by kg, tonne or bag compare fairly. */
-  minPricePerTonne?: number
-  maxPricePerTonne?: number
-  /** Minimum available quantity, in tonnes. */
-  minQuantityTonnes?: number
+  /** Price bounds per kg, so listings sold by kg, tonne or bag compare fairly. */
+  minPricePerKg?: number
+  maxPricePerKg?: number
+  /** Minimum available quantity, in kg. */
+  minQuantityKg?: number
   sort?: 'newest' | 'price_asc' | 'price_desc' | 'quantity_desc'
 }
 

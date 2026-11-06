@@ -5,7 +5,7 @@ import { getStatusMeta } from '@/config/statuses'
 import { nextAdminAction } from '@/lib/logistics'
 import { rankListings } from '@/lib/matching'
 import { effectiveRequirementStatus } from '@/lib/requirements'
-import { stockTotalsInTonnes } from '@/lib/stock'
+import { stockTotalsInKg } from '@/lib/stock'
 import type { AdminMatchmaking, AdminOverview, AdminReports, AdminUserRecord, CommissionEstimate, Dispute, PlatformSettings } from '@/types/admin'
 import type { Listing } from '@/types/listing'
 import type { Order } from '@/types/order'
@@ -97,7 +97,7 @@ export function computeReports(data: InsightsData): AdminReports {
       .sort((a, b) => b.count - a.count),
     completedValueByMonth: [...months.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([month, value]) => ({ month, value })),
     supplyDemandByCategory: categories.filter((c) => c.listings + c.requirements > 0),
-    stockTonnes: stockTotalsInTonnes(data.listings.filter((l) => l.status !== 'rejected')),
+    stockKg: stockTotalsInKg(data.listings.filter((l) => l.status !== 'rejected')),
   })
 }
 
