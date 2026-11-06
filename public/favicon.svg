@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="HeyCileng Agtech emblem: a sprout inside two circular arrows" fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+  <rect width="400" height="400" fill="#FFFFFF" stroke="none"/>
+  <g stroke="#3B403D">
+    <path d="M84.1 168.9 A120 120 0 0 1 315.9 168.9"/>
+    <path d="M323.4 148.2 L315.9 168.9 L299 154.8"/>
+    <path d="M315.9 231.1 A120 120 0 0 1 84.1 231.1"/>
+    <path d="M76.6 251.8 L84.1 231.1 L101 245.2"/>
+  </g>
+  <g stroke="#2E9E4F">
+    <path d="M200 272 V205"/>
+    <path d="M200 238 C168 238 150 218 148 192 C178 192 198 210 200 238 Z"/>
+    <path d="M200 212 C200 180 220 158 252 152 C254 184 236 210 200 212 Z"/>
+  </g>
+</svg>

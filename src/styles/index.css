@@ -1,0 +1,188 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/public-sans';
+
+/* Dark mode follows the data-theme attribute set by ThemeProvider. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ------------------------------------------------------------------
+   Brand scales (static). Semantic tokens below switch per theme.
+   ------------------------------------------------------------------ */
+@theme {
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Public Sans Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Deep forest green — primary brand */
+  --color-forest-50: #f0f7f1;
+  --color-forest-100: #dcede0;
+  --color-forest-200: #bbdbc4;
+  --color-forest-300: #8ec1a0;
+  --color-forest-400: #5ea078;
+  --color-forest-500: #3c8259;
+  --color-forest-600: #2b6845;
+  --color-forest-700: #225339;
+  --color-forest-800: #1c432f;
+  --color-forest-900: #173727;
+  --color-forest-950: #0b1f15;
+
+  /* Rich leaf green — buttons and highlights */
+  --color-leaf-50: #effcf3;
+  --color-leaf-100: #d9f7e2;
+  --color-leaf-200: #b5edc8;
+  --color-leaf-300: #82dea4;
+  --color-leaf-400: #4bc77b;
+  --color-leaf-500: #26ab5d;
+  --color-leaf-600: #198b4a;
+  --color-leaf-700: #166f3e;
+  --color-leaf-800: #155834;
+  --color-leaf-900: #13492d;
+
+  /* Warm ochre — accent */
+  --color-ochre-50: #fdf8ec;
+  --color-ochre-100: #f9ecc9;
+  --color-ochre-200: #f3d78f;
+  --color-ochre-300: #ecbf55;
+  --color-ochre-400: #e6a92f;
+  --color-ochre-500: #d08a1a;
+  --color-ochre-600: #b56a14;
+  --color-ochre-700: #914d15;
+  --color-ochre-800: #773e18;
+  --color-ochre-900: #653418;
+
+  /* Cream backgrounds */
+  --color-cream-50: #fdfcf8;
+  --color-cream-100: #faf7ef;
+  --color-cream-200: #f3eedf;
+  --color-cream-300: #e8e0c9;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
+  --radius-2xl: 1.5rem;
+
+  --shadow-card: 0 1px 2px rgb(23 55 39 / 0.035);
+  --shadow-raised: 0 2px 6px rgb(23 55 39 / 0.05), 0 10px 28px rgb(23 55 39 / 0.07);
+  --shadow-overlay: 0 20px 60px rgb(11 31 21 / 0.25);
+
+  --animate-fade-in: fade-in 180ms ease-out both;
+  --animate-scale-in: scale-in 200ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  --animate-slide-up: slide-up 260ms ease-out both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ------------------------------------------------------------------
+   Semantic tokens — use these in components (bg-surface, text-muted…)
+   ------------------------------------------------------------------ */
+:root {
+  --c-bg: var(--color-cream-100);
+  --c-surface: #ffffff;
+  --c-surface-muted: var(--color-cream-50);
+  --c-surface-sunken: var(--color-cream-200);
+  --c-border: #e9e7df;
+  --c-border-strong: #d6d3c7;
+  --c-text: #17221b;
+  --c-text-muted: #5b6660;
+  --c-text-subtle: #858f89;
+  --c-primary: var(--color-forest-800);
+  --c-primary-hover: var(--color-forest-900);
+  --c-primary-fg: #ffffff;
+  --c-action: var(--color-leaf-600);
+  --c-action-hover: var(--color-leaf-700);
+  --c-accent: var(--color-ochre-400);
+  --c-accent-soft: var(--color-ochre-100);
+  --c-ring: var(--color-leaf-500);
+  --c-overlay: rgb(11 31 21 / 0.5);
+  /* Chart series — validated (dataviz validator) against the light surface. */
+  --c-chart-1: #166f3e;
+  --c-chart-2: #d08a1a;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --c-bg: #0c1611;
+  --c-surface: #121f18;
+  --c-surface-muted: #16251d;
+  --c-surface-sunken: #0a130e;
+  --c-border: #24362c;
+  --c-border-strong: #33493c;
+  --c-text: #e9efe9;
+  --c-text-muted: #a3b0a7;
+  --c-text-subtle: #75847a;
+  --c-primary: var(--color-leaf-500);
+  --c-primary-hover: var(--color-leaf-400);
+  --c-primary-fg: #06120b;
+  --c-action: var(--color-leaf-500);
+  --c-action-hover: var(--color-leaf-400);
+  --c-accent: var(--color-ochre-300);
+  --c-accent-soft: rgb(230 169 47 / 0.14);
+  --c-ring: var(--color-leaf-400);
+  --c-overlay: rgb(0 0 0 / 0.65);
+  /* Dark steps of the same hues, validated against the dark surface. */
+  --c-chart-1: #26ab5d;
+  --c-chart-2: #b56a14;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surface-muted: var(--c-surface-muted);
+  --color-surface-sunken: var(--c-surface-sunken);
+  --color-border: var(--c-border);
+  --color-border-strong: var(--c-border-strong);
+  --color-fg: var(--c-text);
+  --color-muted: var(--c-text-muted);
+  --color-subtle: var(--c-text-subtle);
+  --color-primary: var(--c-primary);
+  --color-primary-hover: var(--c-primary-hover);
+  --color-primary-fg: var(--c-primary-fg);
+  --color-action: var(--c-action);
+  --color-action-hover: var(--c-action-hover);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-ring: var(--c-ring);
+  --color-overlay: var(--c-overlay);
+  --color-chart-1: var(--c-chart-1);
+  --color-chart-2: var(--c-chart-2);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+    font-feature-settings: 'ss01';
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-fg;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+  ::selection {
+    @apply bg-leaf-200 text-forest-950;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
