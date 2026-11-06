@@ -32,9 +32,9 @@ export const LANDING_IMAGES = {
   howItWorks: {
     sellers: [
       image('how-seller-01-create-account.jpg', 'Seller step 1 — Create account', 'Farmer registering a business on HeyCileng', '900 × 600 px (3:2)'),
-      image('how-seller-02-list-byproducts.jpg', 'Seller step 2 — List by-products', 'Bagged by-products ready to be listed', '900 × 600 px (3:2)'),
-      image('how-seller-03-respond-to-orders.jpg', 'Seller step 3 — Respond to orders', 'Seller reviewing an order request', '900 × 600 px (3:2)'),
-      image('how-seller-04-fulfil-with-heycileng.jpg', 'Seller step 4 — Fulfil with HeyCileng', 'By-products being loaded for delivery', '900 × 600 px (3:2)'),
+      image('how-seller-02-list-byproducts.jpg', 'Seller step 2 — List by-products', 'Pile of rice husks ready to be listed', '900 × 600 px (3:2)'),
+      image('how-seller-03-respond-to-orders.jpg', 'Seller step 3 — Respond to orders', 'Farmer checking maize in a field of dry stalks', '900 × 600 px (3:2)'),
+      image('how-seller-04-fulfil-with-heycileng.jpg', 'Seller step 4 — Fulfil with HeyCileng', 'Farmers carrying bundles of maize stalks from the field', '900 × 600 px (3:2)'),
     ],
     buyers: [
       image('how-buyer-01-create-account.jpg', 'Buyer step 1 — Create account', 'Business buyer creating a HeyCileng account', '900 × 600 px (3:2)'),
@@ -45,20 +45,20 @@ export const LANDING_IMAGES = {
   },
 
   categories: {
-    crop_residues: image('category-crop-residues.jpg', 'Crop residues', 'Maize and sorghum stalks after harvest', '800 × 600 px (4:3)'),
-    husks_shells: image('category-husks-shells.jpg', 'Husks & shells', 'Rice husks and groundnut shells', '800 × 600 px (4:3)'),
-    peels_pulp: image('category-peels-pulp.jpg', 'Peels & pulp', 'Sun-dried cassava peels', '800 × 600 px (4:3)'),
-    cobs_bagasse: image('category-cobs-bagasse.jpg', 'Cobs & bagasse', 'Dry maize cobs and sugarcane bagasse', '800 × 600 px (4:3)'),
+    crop_residues: image('category-crop-residues.jpg', 'Crop residues', 'Farmer standing among dry maize stalks after harvest', '800 × 600 px (4:3)'),
+    husks_shells: image('category-husks-shells.jpg', 'Husks & shells', 'Groundnut pods and empty shells', '800 × 600 px (4:3)'),
+    peels_pulp: image('category-peels-pulp.jpg', 'Peels & pulp', 'Women peeling cassava, with peels piled on the ground', '800 × 600 px (4:3)'),
+    cobs_bagasse: image('category-cobs-bagasse.jpg', 'Cobs & bagasse', 'Pile of shredded sugarcane bagasse', '800 × 600 px (4:3)'),
     tree_crop: image('category-tree-crop-byproducts.jpg', 'Tree crop by-products', 'Cocoa pod husks and coconut husks', '800 × 600 px (4:3)'),
     processing: image('category-processing-byproducts.jpg', 'Processing by-products', 'Bran and oil cake from agro-processing', '800 × 600 px (4:3)'),
-    livestock: image('category-livestock-byproducts.jpg', 'Livestock by-products', 'Composted poultry litter in bags', '800 × 600 px (4:3)'),
+    livestock: image('category-livestock-byproducts.jpg', 'Livestock by-products', 'Poultry farmer with young chickens in a wooden coop', '800 × 600 px (4:3)'),
     fibre: image('category-fibre-residues.jpg', 'Fibre residues', 'Plantain and sisal fibres drying', '800 × 600 px (4:3)'),
   } satisfies Record<CategoryId, LandingImage>,
 
   benefits: {
-    sellers: image('benefits-sellers.jpg', 'Seller benefits image', 'Agro-processor with by-products ready to sell', '1400 × 1050 px (4:3)'),
+    sellers: image('benefits-sellers.jpg', 'Seller benefits image', 'Farmers carrying bundles of harvested rice across a field', '1400 × 1050 px (4:3)'),
     buyers: image('benefits-buyers.jpg', 'Buyer benefits image', 'Feed mill or factory receiving agricultural raw materials', '1400 × 1050 px (4:3)'),
   },
 
-  cta: image('cta-banner.jpg', 'Call-to-action banner', 'Wide view of farmland or a by-product storage yard', '2400 × 1000 px (12:5)'),
+  cta: image('cta-banner.jpg', 'Call-to-action banner', 'Wide view of green farmland under a blue sky', '2400 × 1000 px (12:5)'),
 }
