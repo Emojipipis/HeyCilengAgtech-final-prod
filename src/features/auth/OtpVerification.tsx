@@ -132,8 +132,8 @@ export function OtpVerification({
             <p className="text-center text-sm text-red-600 dark:text-red-400">Enter all {OTP_LENGTH} digits of the code.</p>
           )}
           {feedback.kind === 'error' && feedback.error.code === 'invalid_otp' && (
-            <Alert tone="error" title="Incorrect code">
-              That code doesn’t match. Check the latest email from HeyCileng and try again.
+            <Alert tone="error" title="Code not accepted">
+              That code is incorrect or has expired. Check the latest email from HeyCileng, or request a new code below.
             </Alert>
           )}
           {expired && (
@@ -175,7 +175,7 @@ export function OtpVerification({
             </button>
           )}
         </p>
-        <p className="text-center text-xs text-subtle">Check your spam folder. If the email has a confirmation link instead of a code, open the link — that works too. Codes expire after a short time.</p>
+        <p className="text-center text-xs text-subtle">Check your spam folder. Codes expire after 10 minutes.</p>
         {onBack && <BackButton onClick={onBack} label={backLabel} />}
       </div>
     </form>

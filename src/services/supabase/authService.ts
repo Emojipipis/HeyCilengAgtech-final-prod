@@ -1,4 +1,4 @@
-import type { Session as SupabaseSession } from '@supabase/supabase-js'
+import type { AuthError, Session as SupabaseSession } from '@supabase/supabase-js'
 import type { Session } from '@/types/user'
 import type { AuthService, OtpDispatch, ServiceResult } from '../types'
 import { setRememberSession, supabase } from './client'
@@ -18,8 +18,17 @@ async function toSession(session: SupabaseSession | null): Promise<Session | nul
 }
 
 /**
- * Supabase Auth. Email confirmation is required; the confirmation email contains a link and, once a
- * custom SMTP provider is configured, a 6-digit code (template uses {{ .Token }}). Either works.
+ * Supabase answers both a wrong and an expired code with otp_expired ("Token has expired or is invalid"),
+ * so the two can't be told apart — report one honest message. Rate limits and network errors pass through.
+ */
+function otpError(error: AuthError): ServiceResult<never> {
+  if (error.status === 429 || /network|fetch/i.test(error.message)) return fail(error)
+  return { ok: false, error: { code: 'invalid_otp', message: 'That code is incorrect or has expired.' } }
+}
+
+/**
+ * Supabase Auth with email OTP. Sign-up confirmation and password reset emails carry a 6-digit code
+ * (templates in supabase/templates, applied by scripts/auth-emails.mjs); codes expire after 10 minutes.
  */
 export const supabaseAuthService: AuthService = {
   async signUp(input) {
@@ -74,10 +83,7 @@ export const supabaseAuthService: AuthService = {
 
   async verifySignupOtp(email, code) {
     const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' })
-    if (error) {
-      if (error.code === 'otp_expired' && /expired/i.test(error.message)) return { ok: false, error: { code: 'expired_otp', message: error.message } }
-      return { ok: false, error: { code: 'invalid_otp', message: error.message } }
-    }
+    if (error) return otpError(error)
     // The flow continues to log in, so start from a clean state.
     await supabase.auth.signOut()
     return ok({ verified: true })
@@ -92,10 +98,7 @@ export const supabaseAuthService: AuthService = {
 
   async verifyPasswordResetOtp(email, code) {
     const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'recovery' })
-    if (error) {
-      if (/expired/i.test(error.message)) return { ok: false, error: { code: 'expired_otp', message: error.message } }
-      return { ok: false, error: { code: 'invalid_otp', message: error.message } }
-    }
+    if (error) return otpError(error)
     return ok({ verified: true })
   },
 
