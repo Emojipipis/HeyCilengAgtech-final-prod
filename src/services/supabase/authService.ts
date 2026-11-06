@@ -2,7 +2,7 @@ import type { AuthError, Session as SupabaseSession } from '@supabase/supabase-j
 import type { Session } from '@/types/user'
 import type { AuthService, OtpDispatch, ServiceResult } from '../types'
 import { setRememberSession, supabase } from './client'
-import { fail, ok } from './errors'
+import { fail, isEmailSendFailure, ok } from './errors'
 import { toUser, type ProfileRow } from './mappers'
 
 const RESEND_COOLDOWN = 60
@@ -91,8 +91,9 @@ export const supabaseAuthService: AuthService = {
 
   async requestPasswordReset(email) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin })
-    // Don't reveal whether the email is registered: only surface rate limits and network issues.
-    if (error && (error.status === 429 || /network|fetch/i.test(error.message))) return fail(error)
+    // Don't reveal whether the email is registered: only surface rate limits, network issues and
+    // email delivery failures (never claim a code was sent when it wasn't).
+    if (error && (error.status === 429 || /network|fetch/i.test(error.message) || isEmailSendFailure(error))) return fail(error)
     return dispatch(email)
   },
 

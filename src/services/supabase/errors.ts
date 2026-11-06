@@ -10,11 +10,20 @@ interface BackendError {
  * Turns Supabase/Postgres errors into the app's ServiceError.
  * Database functions raise readable messages (e.g. "Only 9 tonnes is available."), which are passed through.
  */
+/** True when Supabase Auth failed to send a verification or reset email. */
+export function isEmailSendFailure(error: BackendError | null | undefined) {
+  return !!error && /error sending .*email|smtp/i.test(error.message ?? '')
+}
+
 export function toServiceError(error: BackendError | null | undefined, fallback = 'Something went wrong. Please try again.'): ServiceError {
   if (!error) return { code: 'unknown', message: fallback }
   const message = error.message ?? fallback
   if (error.status === 429 || error.code === 'over_email_send_rate_limit' || /rate limit/i.test(message)) {
     return { code: 'rate_limited', message: 'Too many attempts. Please wait a minute and try again.' }
+  }
+  // Supabase Auth couldn't hand the email to the SMTP provider (e.g. provider rejected the server).
+  if (isEmailSendFailure(error)) {
+    return { code: 'unknown', message: 'We couldn’t send the email right now. Please try again in a few minutes, or contact HeyCileng support if it keeps happening.' }
   }
   if (error.code === 'PGRST116') return { code: 'not_found', message: 'That item couldn’t be found.' }
   if (error.code === '42501' || /permission denied|row-level security/i.test(message)) {
