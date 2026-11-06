@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipContentProps } from 'recharts'
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipContentProps } from 'recharts'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { DemoBadge } from '@/components/ui/DemoBadge'
 import { Tabs } from '@/components/ui/Tabs'
@@ -189,5 +189,129 @@ export function Bars<T>({ data, labelKey, series, format = String, layout = 'ver
         </BarChart>
       </ResponsiveContainer>
     </div>
+  )
+}
+
+/* ------------------------------------------------------------------ Donut (part-to-whole) */
+
+export interface Slice {
+  key: string
+  label: string
+  value: number
+  /** A validated token: var(--c-chart-1..3), var(--c-chart-other) or a var(--c-status-*) for states. */
+  color: string
+  /** Status slices carry an icon so colour never carries meaning alone. */
+  icon?: ReactNode
+}
+
+function SliceTooltip({ active, payload, total, format }: TooltipContentProps<number, string> & { total: number; format: (v: number) => string }) {
+  if (!active || !payload?.length) return null
+  const s = payload[0].payload as Slice
+  return (
+    <div className="rounded-lg border border-border bg-surface px-3 py-2 text-xs shadow-raised">
+      <p className="flex items-center gap-2 font-semibold text-fg">
+        <span className="size-2 rounded-sm" style={{ background: s.color }} aria-hidden="true" />
+        {s.label}
+      </p>
+      <p className="mt-0.5 text-muted tabular-nums">
+        {format(s.value)} · {total ? Math.round((s.value / total) * 100) : 0}%
+      </p>
+    </div>
+  )
+}
+
+/** Whole-number percentages that always add up to 100 (largest-remainder rounding). */
+function wholePercents(values: number[]): number[] {
+  const total = values.reduce((a, b) => a + b, 0)
+  if (!total) return values.map(() => 0)
+  const raw = values.map((v) => (v / total) * 100)
+  const floors = raw.map(Math.floor)
+  let left = 100 - floors.reduce((a, b) => a + b, 0)
+  raw
+    .map((r, i) => ({ i, rest: r - floors[i] }))
+    .sort((a, b) => b.rest - a.rest)
+    .forEach(({ i }) => {
+      if (left > 0) {
+        floors[i] += 1
+        left -= 1
+      }
+    })
+  return floors
+}
+
+interface DonutProps {
+  title: string
+  description?: string
+  slices: Slice[]
+  format?: (value: number) => string
+  /** Shown in the hole, e.g. the total. */
+  centerValue: string
+  centerLabel: string
+  valueHeader: string
+  empty?: ReactNode
+  className?: string
+}
+
+/**
+ * Donut for a few parts of one whole (max 3 named slices + "Other"). Every slice is direct-labelled in the
+ * legend with its value and share, slices are separated by 2px surface gaps, and a table view is provided.
+ */
+export function Donut({ title, description, slices, format = String, centerValue, centerLabel, valueHeader, empty, className }: DonutProps) {
+  const visible = slices.filter((s) => s.value > 0)
+  const total = visible.reduce((sum, s) => sum + s.value, 0)
+  const shares = wholePercents(visible.map((s) => s.value))
+  return (
+    <ChartFrame
+      title={title}
+      description={description}
+      data={visible}
+      labelKey="label"
+      labelHeader="Category"
+      series={[{ key: 'value', label: valueHeader, slot: 1 }]}
+      format={format}
+      empty={empty}
+      className={className}
+    >
+      <div className="flex flex-col items-center gap-5 sm:flex-row">
+        <div className="relative size-44 shrink-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={visible}
+                dataKey="value"
+                nameKey="label"
+                innerRadius="64%"
+                outerRadius="100%"
+                startAngle={90}
+                endAngle={-270}
+                stroke="var(--c-surface)"
+                strokeWidth={2}
+                isAnimationActive={false}
+              >
+                {visible.map((s) => (
+                  <Cell key={s.key} fill={s.color} />
+                ))}
+              </Pie>
+              <Tooltip content={(props) => <SliceTooltip {...(props as TooltipContentProps<number, string>)} total={total} format={format} />} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span className="font-display text-lg font-bold text-fg tabular-nums">{centerValue}</span>
+            <span className="text-xs text-subtle">{centerLabel}</span>
+          </div>
+        </div>
+        <ul className="w-full min-w-0 space-y-2 text-sm" aria-label={`${title} breakdown`}>
+          {visible.map((s) => (
+            <li key={s.key} className="flex items-center gap-2">
+              <span className="size-2.5 shrink-0 rounded-sm" style={{ background: s.color }} aria-hidden="true" />
+              {s.icon && <span className="shrink-0 text-subtle [&_svg]:size-3.5" aria-hidden="true">{s.icon}</span>}
+              <span className="min-w-0 flex-1 truncate text-muted">{s.label}</span>
+              <span className="font-semibold text-fg tabular-nums">{format(s.value)}</span>
+              <span className="w-10 text-right text-xs text-subtle tabular-nums">{shares[visible.indexOf(s)]}%</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </ChartFrame>
   )
 }

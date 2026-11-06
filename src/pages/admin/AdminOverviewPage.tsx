@@ -6,6 +6,7 @@ import { DemoBadge } from '@/components/ui/DemoBadge'
 import { StatCard } from '@/components/ui/StatCard'
 import { ErrorState, Skeleton } from '@/components/ui/States'
 import { Bars, ChartFrame } from '@/features/admin/charts'
+import { TransactionAnalytics } from '@/features/payments/TransactionAnalytics'
 import { useAsync } from '@/hooks/useAsync'
 import { useViewer } from '@/hooks/useSession'
 import { formatCurrency, formatDate, formatRelative } from '@/lib/format'
@@ -15,6 +16,7 @@ export function AdminOverviewPage() {
   const { isDemo } = useViewer()
   const overview = useAsync(() => services.insights.overview(), 'admin-overview')
   const activity = useAsync(() => services.audit.list(), 'admin-audit')
+  const payments = useAsync(() => services.payments.listPayments(), 'admin-payments')
 
   if (overview.loading && !overview.data) return <Skeleton className="h-96 w-full rounded-xl" />
   if (overview.error || !overview.data) return <ErrorState description={overview.error?.message} onRetry={overview.reload} />
@@ -72,6 +74,26 @@ export function AdminOverviewPage() {
           <Bars data={weekly} labelKey="week" series={[{ key: 'orders', label: 'Orders', slot: 1 }]} height={220} />
         </ChartFrame>
       </div>
+
+      <section aria-labelledby="transactions-heading" className="mt-6">
+        <div className="mb-3 flex items-center justify-between gap-4">
+          <h2 id="transactions-heading" className="text-lg font-bold">
+            Transactions
+          </h2>
+          <Link to="/admin/payments" className="text-sm font-semibold text-action hover:underline">
+            All payments
+          </Link>
+        </div>
+        {payments.loading && !payments.data ? (
+          <Skeleton className="h-64 w-full rounded-xl" />
+        ) : payments.error?.code === 'not_connected' ? (
+          <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted">Payments are processed only by the live backend — none are simulated in demo mode.</p>
+        ) : payments.error ? (
+          <ErrorState description={payments.error.message} onRetry={payments.reload} />
+        ) : (
+          <TransactionAnalytics records={payments.data ?? []} />
+        )}
+      </section>
 
       <Card className="mt-6">
         <CardHeader title="Recent administrative activity" action={<Link to="/admin/audit" className="text-sm font-semibold text-action hover:underline">Audit logs</Link>} />

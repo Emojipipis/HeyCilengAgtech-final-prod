@@ -108,6 +108,12 @@
   /* Chart series — validated (dataviz validator) against the light surface. */
   --c-chart-1: #166f3e;
   --c-chart-2: #d08a1a;
+  --c-chart-3: #2a78d6; /* 3 slots validate all-pairs (part-to-whole charts) */
+  --c-chart-other: #8a938d;
+  /* Status (reserved for state; always paired with an icon and label). */
+  --c-status-good: #0ca30c;
+  --c-status-warning: #fab219;
+  --c-status-critical: #d03b3b;
   color-scheme: light;
 }
 
@@ -133,6 +139,11 @@
   /* Dark steps of the same hues, validated against the dark surface. */
   --c-chart-1: #26ab5d;
   --c-chart-2: #b56a14;
+  --c-chart-3: #3987e5;
+  --c-chart-other: #6b746e;
+  --c-status-good: #0ca30c;
+  --c-status-warning: #fab219;
+  --c-status-critical: #d03b3b;
   color-scheme: dark;
 }
 

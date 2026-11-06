@@ -9,6 +9,7 @@ import { DataTable, type Column } from '@/components/ui/Table'
 import { useAsync } from '@/hooks/useAsync'
 import { formatCurrency, formatDateTime } from '@/lib/format'
 import { sellerPayout } from '@/lib/payments'
+import { TransactionAnalytics } from '@/features/payments/TransactionAnalytics'
 import { services } from '@/services'
 import type { PaymentRecord } from '@/types/admin'
 import type { Order } from '@/types/order'
@@ -90,6 +91,8 @@ export function AdminPaymentsPage() {
         <StatCard label="Seller payouts due" value={formatCurrency(payoutsDue.reduce((sum, o) => sum + sellerPayout(o).amount, 0))} icon={<Banknote />} />
         <StatCard label="Refunds owed" value={formatCurrency(refundsDue.reduce((sum, o) => sum + (o.payment.amountPaid ?? 0), 0))} icon={<RotateCcw />} />
       </div>
+
+      <TransactionAnalytics records={records} className="mb-6 grid gap-6 lg:grid-cols-2 *:min-w-0" />
 
       <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr] *:min-w-0">
         <section aria-labelledby="txn-heading">
