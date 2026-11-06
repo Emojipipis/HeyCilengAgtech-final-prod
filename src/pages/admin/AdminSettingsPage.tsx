@@ -135,12 +135,6 @@ function SettingsForm({ initial, onSaved }: { initial: PlatformSettings; onSaved
               checked={values.marketplace.requireListingReview}
               onChange={(e) => update('marketplace', { requireListingReview: e.target.checked })}
             />
-            <Checkbox
-              label="Allow collection orders"
-              description="Buyers can choose to collect from the seller’s site instead of delivery."
-              checked={values.marketplace.allowCollection}
-              onChange={(e) => update('marketplace', { allowCollection: e.target.checked })}
-            />
             <Input label="Maximum images per listing" inputMode="numeric" value={String(values.marketplace.maxImagesPerListing)} onChange={(e) => update('marketplace', { maxImagesPerListing: num(e.target.value) })} containerClassName="max-w-xs" />
           </Group>
         )}

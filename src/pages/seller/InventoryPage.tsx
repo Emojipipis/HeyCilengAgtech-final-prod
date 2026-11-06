@@ -53,7 +53,7 @@ export function InventoryPage() {
           </p>
           <p className="mt-1 text-muted">
             Stock is <span className="font-medium text-fg">reserved</span> when you accept an order and becomes <span className="font-medium text-fg">sold</span> when
-            HeyCileng confirms delivery or collection. Pending requests don’t affect stock.
+            HeyCileng confirms delivery. Pending requests don’t affect stock.
           </p>
         </div>
       </Card>

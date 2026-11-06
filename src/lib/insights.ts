@@ -26,7 +26,7 @@ export interface InsightsData {
 }
 
 const OPEN: OrderStatus[] = ['pending', 'accepted', 'processing', 'dispatched', 'ready_for_collection', 'delivery_failed']
-const ACTIONABLE = ['assign_partner', 'resolve_failed', 'mark_ready', 'confirm_collection']
+const ACTIONABLE = ['assign_partner', 'resolve_failed']
 
 /** When an order completed (its last "completed" timeline event). */
 const completedAt = (o: Order) => [...o.timeline].reverse().find((e) => e.status === 'completed')?.at ?? o.updatedAt

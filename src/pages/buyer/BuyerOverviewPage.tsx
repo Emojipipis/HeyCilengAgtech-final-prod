@@ -20,7 +20,7 @@ import { effectiveRequirementStatus } from '@/lib/requirements'
 import { services } from '@/services'
 import type { OrderStatus } from '@/types/status'
 
-const ACTIVE_ORDER: OrderStatus[] = ['pending', 'accepted', 'processing', 'dispatched', 'ready_for_collection']
+const ACTIVE_ORDER: OrderStatus[] = ['pending', 'accepted', 'processing', 'dispatched']
 
 function greeting() {
   const hour = new Date().getHours()
@@ -60,7 +60,7 @@ export function BuyerOverviewPage() {
       />
 
       <section aria-label="Summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Active orders" value={orders.loading ? '—' : activeOrders.length} icon={<Package />} hint="Pending to ready for collection" />
+        <StatCard label="Active orders" value={orders.loading ? '—' : activeOrders.length} icon={<Package />} hint="Pending, accepted or on the way" />
         <StatCard label="Active requirements" value={requirements.loading ? '—' : activeRequirements.length} icon={<ClipboardList />} tone="accent" hint="Used for matchmaking" />
         <StatCard label="Recommended matches" value={matches.loading ? '—' : (matches.data?.length ?? 0)} icon={<Sparkles />} tone="info" hint="Advisory, across requirements" />
         <StatCard label="Saved listings" value={saved.saved.size} icon={<Heart />} tone="neutral" hint="Your shortlist" />

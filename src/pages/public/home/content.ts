@@ -28,7 +28,7 @@ export const SELLER_STEPS: Step[] = [
   { title: 'Create a seller account', description: 'Register your farm, cooperative or processing business and verify your email.' },
   { title: 'List your by-products', description: 'Add quantity, unit, price, location, quality details and photos. Listings are reviewed before going live.' },
   { title: 'Respond to order requests', description: 'Accept or decline requests from buyers. You also see buyer requirements that match your stock.' },
-  { title: 'Fulfil with HeyCileng', description: 'HeyCileng coordinates delivery or collection and keeps both sides updated through notifications.' },
+  { title: 'Fulfil with HeyCileng', description: 'HeyCileng’s logistics partners pick up from the seller and deliver to the buyer, and both sides are kept updated through notifications.' },
 ]
 
 export const BUYER_STEPS: Step[] = [
@@ -108,13 +108,13 @@ export const FAQS: { id: string; question: string; answer: string }[] = [
     id: 'delivery',
     question: 'How are deliveries handled?',
     answer:
-      'The HeyCileng team assigns a logistics partner to each delivery order and records the delivery fee, who pays it, the estimated date and any tracking reference. For collection orders, you’ll be notified when the order is ready for collection.',
+      'Every order is delivered by a HeyCileng logistics partner, who picks up from the seller and delivers to the buyer — buyers and sellers never need to meet or contact each other. HeyCileng records the delivery fee, who pays it, the estimated date and any tracking reference.',
   },
   {
     id: 'payments',
     question: 'How do payments work?',
     answer:
-      'Buyers pay HeyCileng securely through Paystack once the seller has accepted the order and any delivery fee is confirmed. HeyCileng then arranges dispatch or collection, and pays the seller after the order is complete, minus HeyCileng’s commission.',
+      'Buyers pay HeyCileng securely through Paystack once the seller has accepted the order and any delivery fee is confirmed. HeyCileng then arranges delivery, and pays the seller after the order is complete, minus HeyCileng’s commission.',
   },
   {
     id: 'fees',

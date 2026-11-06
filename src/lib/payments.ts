@@ -5,7 +5,7 @@ import type { Order } from '@/types/order'
  * The amount actually charged is always computed by the backend.
  */
 
-/** Delivery fee the buyer pays (0 when HeyCileng or the seller covers it, or for collection). */
+/** Delivery fee the buyer pays (0 when HeyCileng or the seller covers it). */
 export function buyerDeliveryFee(order: Order): number {
   return order.fulfilment === 'delivery' && order.delivery?.feePayer === 'buyer' ? (order.delivery.fee ?? 0) : 0
 }
@@ -15,11 +15,11 @@ export function amountDue(order: Order): number {
   return order.subtotal + buyerDeliveryFee(order)
 }
 
-/** True once the seller has accepted and, for deliveries, HeyCileng has confirmed the fee. */
+/** True once the seller has accepted and HeyCileng has confirmed the delivery fee. */
 export function isPayable(order: Order): boolean {
   if (order.payment.status !== 'unpaid') return false
   if (!['accepted', 'processing', 'delivery_failed'].includes(order.status)) return false
-  return order.fulfilment === 'collection' || (order.delivery?.feePayer !== undefined && order.delivery.fee !== undefined)
+  return order.delivery?.feePayer !== undefined && order.delivery.fee !== undefined
 }
 
 /** Unpaid and accepted, but waiting for HeyCileng to confirm the delivery fee. */

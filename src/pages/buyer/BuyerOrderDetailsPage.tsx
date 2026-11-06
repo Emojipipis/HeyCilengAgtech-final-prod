@@ -104,7 +104,7 @@ export function BuyerOrderDetailsPage() {
                   ['Seller area', order.listing.sellerLocation.area],
                   ['Quantity', formatQuantity(order.quantity, order.listing.unit)],
                   ['Unit price', formatUnitPrice(order.listing.pricePerUnit, order.listing.unit)],
-                  ['Fulfilment', order.fulfilment === 'delivery' ? 'Delivery' : 'Collection'],
+                  ['Fulfilment', 'Delivery by a HeyCileng logistics partner'],
                   ['Preferred date', order.preferredDate ? formatDate(order.preferredDate) : 'Not specified'],
                 ].map(([label, value]) => (
                   <div key={label}>

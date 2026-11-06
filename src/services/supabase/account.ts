@@ -212,7 +212,6 @@ export const supabaseContactService: ContactService = {
 }
 
 interface PublicConfig {
-  allowCollection: boolean
   maxImagesPerListing: number
   commissionRatePercent: number
   matching: { weights: Record<'material' | 'quantity' | 'location' | 'price' | 'application' | 'quality', number>; minRecommendedScore: number }
@@ -225,6 +224,6 @@ export const supabasePlatformConfigService: PlatformConfigService = {
     const config = data as PublicConfig
     // Keep matching in step with the weights HeyCileng has configured.
     applyMatchingSettings(config.matching.weights, config.matching.minRecommendedScore)
-    return ok({ allowCollection: config.allowCollection, maxImagesPerListing: config.maxImagesPerListing, commissionRatePercent: config.commissionRatePercent })
+    return ok({ maxImagesPerListing: config.maxImagesPerListing, commissionRatePercent: config.commissionRatePercent })
   },
 }

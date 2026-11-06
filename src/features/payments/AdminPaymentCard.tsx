@@ -82,7 +82,7 @@ export function AdminPaymentCard({ order, onChanged }: { order: Order; onChanged
           <p className="text-muted">
             {awaitingDeliveryFee(order)
               ? 'Assign a logistics partner and delivery fee — the buyer can pay once the fee is set.'
-              : 'Waiting for the buyer to pay. Dispatch and collection are blocked until Paystack confirms payment.'}
+              : 'Waiting for the buyer to pay. Dispatch is blocked until Paystack confirms payment.'}
           </p>
         )}
 

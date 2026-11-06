@@ -262,12 +262,6 @@ export const supabaseAdminOrderService: AdminOrderService = {
       p_tracking: input.trackingReference ?? null,
     })
   },
-  markReadyForCollection(orderId, note) {
-    return adminRpcThen(orderId, 'admin_collection', { p_order: orderId, p_action: 'ready', p_note: note ?? null })
-  },
-  markCollected(orderId) {
-    return adminRpcThen(orderId, 'admin_collection', { p_order: orderId, p_action: 'collected' })
-  },
   cancel(orderId, reason) {
     return adminRpcThen(orderId, 'admin_cancel_order', { p_order: orderId, p_reason: reason })
   },

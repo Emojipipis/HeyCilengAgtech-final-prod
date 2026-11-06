@@ -14,7 +14,8 @@ import { services } from '@/services'
 import type { OrderStatus } from '@/types/status'
 
 type TabValue = 'all' | OrderStatus
-const STATUSES = Object.keys(STATUS_META.order) as OrderStatus[]
+// Collection is retired: every order is delivered by a HeyCileng logistics partner.
+const STATUSES = (Object.keys(STATUS_META.order) as OrderStatus[]).filter((s) => s !== 'ready_for_collection')
 
 export function BuyerOrdersPage() {
   const { data, loading, error, reload } = useAsync(() => services.orders.listMine(), 'orders')

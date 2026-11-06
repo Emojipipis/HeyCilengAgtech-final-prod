@@ -62,7 +62,7 @@ export const demoAdminOrderService: AdminOrderService = {
     await delay(600)
     const order = find(orderId)
     if (!order) return notFound('This order')
-    if (order.fulfilment !== 'delivery') return invalid('This is a collection order — it doesn’t need a logistics partner.')
+    if (order.fulfilment !== 'delivery') return invalid('Every order is delivered by a HeyCileng logistics partner.')
     if (!['accepted', 'processing', 'delivery_failed'].includes(order.status)) {
       return invalid(`Logistics can be assigned once the seller has accepted the order (current status: ${getStatusMeta('order', order.status).label}).`)
     }
@@ -131,34 +131,6 @@ export const demoAdminOrderService: AdminOrderService = {
       })
       notifyBoth(order, `Delivery ${rescheduled ? 'rescheduled' : 'scheduled'} for ${order.reference}`, delivery.estimatedDate ? `Estimated delivery: ${formatDate(delivery.estimatedDate)}.` : label)
     }
-    return ok(copy(order))
-  },
-
-  async markReadyForCollection(orderId, note) {
-    await delay(500)
-    const order = find(orderId)
-    if (!order) return notFound('This order')
-    if (order.fulfilment !== 'collection') return invalid('Only collection orders can be marked ready for collection.')
-    if (!['accepted', 'processing'].includes(order.status)) return invalid('The order must be accepted or processing first.')
-    const at = nowISO()
-    order.delivery = { status: 'ready_for_collection', history: [...(order.delivery?.history ?? []), { at, status: 'ready_for_collection', note: note || undefined }] }
-    record(order, { status: 'ready_for_collection', title: 'Ready for collection', description: note || 'HeyCileng will share collection instructions with the buyer.' })
-    notifyBoth(order, `Order ${order.reference} is ready for collection`, note || 'HeyCileng will share the collection point and instructions.', 'order')
-    audit({ action: 'Marked ready for collection', targetType: 'order', targetLabel: order.reference })
-    return ok(copy(order))
-  },
-
-  async markCollected(orderId) {
-    await delay(500)
-    const order = find(orderId)
-    if (!order) return notFound('This order')
-    if (order.status !== 'ready_for_collection') return invalid('Only orders that are ready for collection can be marked collected.')
-    const at = nowISO()
-    order.delivery = { status: 'collected', history: [...(order.delivery?.history ?? []), { at, status: 'collected' }] }
-    settleStock(order)
-    record(order, { status: 'completed', title: 'Collected', description: 'Collection confirmed by HeyCileng.' })
-    notifyBoth(order, `Order ${order.reference} completed`, 'Collection confirmed by HeyCileng.', 'order')
-    audit({ action: 'Confirmed collection', targetType: 'order', targetLabel: order.reference })
     return ok(copy(order))
   },
 

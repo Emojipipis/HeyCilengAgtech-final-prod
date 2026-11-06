@@ -279,6 +279,6 @@ export const demoPaymentService: PaymentService = {
 export const demoPlatformConfigService: PlatformConfigService = {
   async get() {
     const { marketplace, commission } = demoDb.settings
-    return ok({ allowCollection: marketplace.allowCollection, maxImagesPerListing: marketplace.maxImagesPerListing, commissionRatePercent: commission.ratePercent })
+    return ok({ maxImagesPerListing: marketplace.maxImagesPerListing, commissionRatePercent: commission.ratePercent })
   },
 }

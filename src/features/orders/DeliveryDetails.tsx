@@ -1,4 +1,4 @@
-import { CalendarDays, Hash, MapPin, Receipt, Truck, UserRound, Warehouse } from 'lucide-react'
+import { CalendarDays, Hash, MapPin, Receipt, Truck, UserRound } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -23,31 +23,6 @@ const pending = <span className="font-normal text-subtle">To be confirmed by Hey
 /** Read-only logistics summary. Logistics are assigned and updated by HeyCileng administrators. */
 /** `admin` sees everything, including the delivery address; `seller` never sees the buyer's address. */
 export function DeliveryDetails({ order, audience = 'buyer', action }: { order: Order; audience?: 'buyer' | 'seller' | 'admin'; action?: ReactNode }) {
-  if (order.fulfilment === 'collection') {
-    const ready = order.status === 'ready_for_collection'
-    return (
-      <Card>
-        <CardHeader title="Collection" description={audience === 'seller' ? 'The buyer collects this order from your site.' : audience === 'admin' ? 'The buyer collects this order from the seller’s site.' : 'You collect this order from the seller’s site.'}
-          action={action} />
-        <CardBody>
-          <dl className="divide-y divide-border">
-            <Row icon={<Warehouse />} label="Status">
-              {ready ? <StatusBadge kind="delivery" status="ready_for_collection" /> : order.delivery ? <StatusBadge kind="delivery" status={order.delivery.status} /> : 'Not ready yet'}
-            </Row>
-            <Row icon={<MapPin />} label="Collection area">
-              {order.listing.sellerLocation.area}
-            </Row>
-          </dl>
-          <p className="mt-3 text-xs text-subtle">
-            {ready
-              ? 'HeyCileng will share the exact collection point and instructions. Bring your order reference.'
-              : 'You’ll be notified when the order is ready for collection.'}
-          </p>
-        </CardBody>
-      </Card>
-    )
-  }
-
   const delivery = order.delivery
   return (
     <Card>

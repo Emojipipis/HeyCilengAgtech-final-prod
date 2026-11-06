@@ -39,7 +39,6 @@ export function OrdersTable({ orders, basePath, loading, empty, counterparty }: 
     },
     { key: 'qty', header: 'Quantity', render: (o) => <span className="tabular-nums">{formatQuantity(o.quantity, o.listing.unit)}</span>, hideOnMobile: true },
     { key: 'value', header: 'Value', align: 'right', render: (o) => <span className="font-medium tabular-nums">{formatCurrency(o.subtotal)}</span>, hideOnMobile: true },
-    { key: 'fulfilment', header: 'Fulfilment', render: (o) => (o.fulfilment === 'delivery' ? 'Delivery' : 'Collection'), hideOnMobile: true },
     { key: 'status', header: 'Status', render: (o) => <StatusBadge kind="order" status={o.status} /> },
   ]
 

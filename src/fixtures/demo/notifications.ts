@@ -8,8 +8,8 @@ export const DEMO_BUYER_NOTIFICATIONS: AppNotification[] = [
     href: '/buyer/orders/demo-order-4',
   },
   {
-    id: 'demo-ntf-2', category: 'order', title: 'Ready for collection',
-    body: 'Order HC-DEMO-1044 (fresh cassava peels) is ready to collect.', createdAt: '2026-11-04T15:05:00Z', read: false,
+    id: 'demo-ntf-2', category: 'delivery', title: 'Order HC-DEMO-1044 is on its way',
+    body: 'Fresh cassava peels were picked up from the seller by HeyCileng’s logistics partner.', createdAt: '2026-11-04T15:05:00Z', read: false,
     href: '/buyer/orders/demo-order-5',
   },
   {

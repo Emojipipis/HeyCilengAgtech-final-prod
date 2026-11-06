@@ -15,18 +15,12 @@ export type AdminNextAction =
   | 'assign_partner'
   | 'update_delivery'
   | 'resolve_failed'
-  | 'mark_ready'
-  | 'confirm_collection'
   | 'none'
 
 /** What HeyCileng needs to do next for an order. */
 export function nextAdminAction(order: Order): AdminNextAction {
   if (order.status === 'pending') return 'await_seller'
   if (['completed', 'cancelled', 'declined'].includes(order.status)) return 'none'
-  if (order.fulfilment === 'collection') {
-    if (order.status === 'ready_for_collection') return 'confirm_collection'
-    return 'mark_ready'
-  }
   if (order.status === 'delivery_failed') return 'resolve_failed'
   if (!order.delivery?.partnerId) return 'assign_partner'
   return 'update_delivery'
@@ -37,7 +31,5 @@ export const NEXT_ACTION_LABEL: Record<AdminNextAction, string> = {
   assign_partner: 'Assign a logistics partner',
   update_delivery: 'Keep the delivery status up to date',
   resolve_failed: 'Delivery failed — reschedule or cancel',
-  mark_ready: 'Mark ready for collection when prepared',
-  confirm_collection: 'Confirm when the buyer has collected',
   none: 'No action needed',
 }

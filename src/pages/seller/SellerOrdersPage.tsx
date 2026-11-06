@@ -13,7 +13,7 @@ import { services } from '@/services'
 import type { OrderStatus } from '@/types/status'
 
 type TabValue = 'all' | OrderStatus
-const ORDER: OrderStatus[] = ['pending', 'accepted', 'processing', 'dispatched', 'ready_for_collection', 'completed', 'declined', 'cancelled', 'delivery_failed']
+const ORDER: OrderStatus[] = ['pending', 'accepted', 'processing', 'dispatched', 'completed', 'declined', 'cancelled', 'delivery_failed']
 
 export function SellerOrdersPage() {
   const { data, loading, error, reload } = useAsync(() => services.sellerOrders.listIncoming(), 'seller-orders')

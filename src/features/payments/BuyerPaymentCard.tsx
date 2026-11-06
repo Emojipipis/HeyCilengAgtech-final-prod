@@ -148,7 +148,7 @@ export function BuyerPaymentCard({ order, onChanged }: { order: Order; onChanged
             </Button>
             <p className="flex gap-2 text-xs text-subtle">
               <ShieldCheck className="mt-px size-3.5 shrink-0" aria-hidden="true" />
-              You’ll complete payment on Paystack’s secure page. HeyCileng arranges dispatch or collection after payment is confirmed and pays the seller once the order is complete.
+              You’ll complete payment on Paystack’s secure page. HeyCileng arranges delivery after payment is confirmed and pays the seller once the order is complete.
             </p>
           </div>
         )}

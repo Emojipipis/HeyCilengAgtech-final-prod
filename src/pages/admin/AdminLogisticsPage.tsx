@@ -33,7 +33,6 @@ interface Lane {
 
 function laneFor(order: Order): Lane['key'] | null {
   if (['completed', 'cancelled', 'declined', 'pending'].includes(order.status)) return null
-  if (order.fulfilment === 'collection') return order.status === 'ready_for_collection' ? 'awaiting_collection' : 'prepare_collection'
   if (order.status === 'delivery_failed') return 'failed'
   if (!order.delivery?.partnerId) return 'unassigned'
   if (order.delivery.status === 'in_transit') return 'in_transit'
@@ -71,8 +70,6 @@ function DeliveryBoard({ orders }: { orders: Order[] }) {
     { key: 'failed', title: 'Failed deliveries', hint: 'Reschedule or cancel', tone: 'danger', orders: [] },
     { key: 'scheduled', title: 'Assigned & scheduled', hint: 'Waiting for pickup', tone: 'info', orders: [] },
     { key: 'in_transit', title: 'In transit', hint: 'Confirm delivery on arrival', tone: 'info', orders: [] },
-    { key: 'prepare_collection', title: 'Collections to prepare', hint: 'Mark ready when the seller confirms', tone: 'neutral', orders: [] },
-    { key: 'awaiting_collection', title: 'Awaiting collection', hint: 'Confirm once collected', tone: 'success', orders: [] },
   ]
   orders.forEach((o) => {
     const key = laneFor(o)
@@ -80,7 +77,7 @@ function DeliveryBoard({ orders }: { orders: Order[] }) {
   })
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {lanes.map((lane) => (
         <section key={lane.key} aria-labelledby={`lane-${lane.key}`} className="rounded-xl border border-border bg-surface-muted p-4">
           <div className="flex items-center justify-between gap-2">
@@ -211,7 +208,7 @@ export function AdminLogisticsPage() {
       <PageHeader
         eyebrow={isDemo ? <DemoBadge label="Placeholder partners — not real logistics companies" /> : undefined}
         title="Logistics"
-        description="HeyCileng assigns logistics partners, tracks deliveries and confirms collections. Buyers and sellers see the partner name, fee and status only."
+        description="HeyCileng assigns a logistics partner to every order and tracks it from pickup at the seller to delivery at the buyer. Buyers and sellers see the partner name, fee and status only."
       />
       <Tabs
         label="Logistics views"

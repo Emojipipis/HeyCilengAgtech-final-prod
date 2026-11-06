@@ -98,7 +98,7 @@ export const DEMO_AUDIT_LOG: AuditLogEntry[] = [
 
 export const DEFAULT_SETTINGS: PlatformSettings = {
   commission: { ratePercent: 5, chargedTo: 'seller' },
-  marketplace: { requireListingReview: true, allowCollection: true, maxImagesPerListing: 6 },
+  marketplace: { requireListingReview: true, maxImagesPerListing: 6 },
   matching: {
     weights: Object.fromEntries(Object.entries(DEFAULT_MATCH_WEIGHTS).map(([k, v]) => [k, Math.round(v * 100)])) as PlatformSettings['matching']['weights'],
     minRecommendedScore: DEFAULT_MIN_RECOMMENDED_SCORE,

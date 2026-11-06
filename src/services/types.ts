@@ -205,10 +205,6 @@ export interface AdminOrderService {
    * in transit → dispatched · delivered → completed (reserved stock becomes sold) · failed → delivery failed (stock stays reserved).
    */
   updateDelivery(orderId: string, input: UpdateDeliveryInput): Promise<ServiceResult<Order>>
-  /** Collection orders only. */
-  markReadyForCollection(orderId: string, note?: string): Promise<ServiceResult<Order>>
-  /** Collection orders only. Completes the order; reserved stock becomes sold. */
-  markCollected(orderId: string): Promise<ServiceResult<Order>>
   /** Cancels an open order and releases any reserved stock. */
   cancel(orderId: string, reason: string): Promise<ServiceResult<Order>>
 }
@@ -316,7 +312,6 @@ export interface PaymentService {
 
 /** Settings that ordinary users may read (a safe subset of PlatformSettings). */
 export interface PublicPlatformConfig {
-  allowCollection: boolean
   maxImagesPerListing: number
   commissionRatePercent: number
 }

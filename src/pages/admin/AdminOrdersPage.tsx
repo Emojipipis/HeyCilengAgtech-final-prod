@@ -5,7 +5,6 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { DemoBadge } from '@/components/ui/DemoBadge'
 import { Pagination } from '@/components/ui/Pagination'
 import { SearchBar } from '@/components/ui/SearchBar'
-import { Select } from '@/components/ui/Select'
 import { EmptyState, ErrorState } from '@/components/ui/States'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { DataTable, type Column } from '@/components/ui/Table'
@@ -21,10 +20,11 @@ import type { Order } from '@/types/order'
 import type { OrderStatus } from '@/types/status'
 
 type TabValue = 'needs_action' | 'all' | OrderStatus
-const STATUSES = Object.keys(STATUS_META.order) as OrderStatus[]
+// Collection is retired: every order is delivered by a HeyCileng logistics partner.
+const STATUSES = (Object.keys(STATUS_META.order) as OrderStatus[]).filter((s) => s !== 'ready_for_collection')
 
 /** Steps HeyCileng must take. Waiting on the seller, or deliveries already under way, aren't listed. */
-const ACTIONABLE: AdminNextAction[] = ['assign_partner', 'resolve_failed', 'mark_ready', 'confirm_collection']
+const ACTIONABLE: AdminNextAction[] = ['assign_partner', 'resolve_failed']
 const needsAction = (o: Order) => ACTIONABLE.includes(nextAdminAction(o))
 
 export function AdminOrdersPage() {
@@ -32,7 +32,6 @@ export function AdminOrdersPage() {
   const { isDemo } = useViewer()
   const { data, loading, error, reload } = useAsync(() => services.adminOrders.listAll(), 'admin-orders')
   const [tab, setTab] = useState<TabValue>('needs_action')
-  const [fulfilment, setFulfilment] = useState<'all' | Order['fulfilment']>('all')
   const [query, setQuery] = useState('')
 
   const orders = useMemo(() => data ?? [], [data])
@@ -41,11 +40,10 @@ export function AdminOrdersPage() {
     return orders.filter(
       (o) =>
         (tab === 'all' || (tab === 'needs_action' ? needsAction(o) : o.status === tab)) &&
-        (fulfilment === 'all' || o.fulfilment === fulfilment) &&
         (!q || [o.reference, o.listing.name, o.buyerBusinessName, o.listing.sellerBusinessName].some((t) => t.toLowerCase().includes(q))),
     )
-  }, [orders, tab, fulfilment, query])
-  const pagination = usePagination(filtered, 10, `${tab}|${fulfilment}|${query}`)
+  }, [orders, tab, query])
+  const pagination = usePagination(filtered, 10, `${tab}|${query}`)
 
   const columns: Column<Order>[] = [
     {
@@ -82,7 +80,6 @@ export function AdminOrdersPage() {
         </p>
       ),
     },
-    { key: 'fulfilment', header: 'Fulfilment', hideOnMobile: true, render: (o) => (o.fulfilment === 'delivery' ? 'Delivery' : 'Collection') },
     { key: 'status', header: 'Order', render: (o) => <StatusBadge kind="order" status={o.status} /> },
     {
       key: 'next',
@@ -97,7 +94,7 @@ export function AdminOrdersPage() {
       <PageHeader
         eyebrow={isDemo ? <DemoBadge /> : undefined}
         title="Orders"
-        description="Every order on the platform. HeyCileng assigns logistics, confirms delivery or collection, and resolves problems."
+        description="Every order on the platform. HeyCileng assigns a logistics partner to each one, confirms delivery and resolves problems."
       />
 
       <Tabs
@@ -113,17 +110,6 @@ export function AdminOrdersPage() {
       />
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <SearchBar value={query} onChange={setQuery} placeholder="Search order, material, buyer or seller" className="sm:max-w-md sm:flex-1" label="Search orders" />
-        <Select
-          aria-label="Fulfilment"
-          options={[
-            { value: 'all', label: 'All fulfilment' },
-            { value: 'delivery', label: 'Delivery' },
-            { value: 'collection', label: 'Collection' },
-          ]}
-          value={fulfilment}
-          onChange={(e) => setFulfilment(e.target.value as typeof fulfilment)}
-          containerClassName="sm:w-48"
-        />
       </div>
 
       {error ? (

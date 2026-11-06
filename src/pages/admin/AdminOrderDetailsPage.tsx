@@ -1,4 +1,4 @@
-import { ArrowLeft, Ban, PackageCheck, PackageSearch, Pencil, Truck, Warehouse } from 'lucide-react'
+import { ArrowLeft, Ban, PackageSearch, Pencil, Truck } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Alert } from '@/components/ui/Alert'
@@ -25,7 +25,7 @@ import { nextAdminAction, NEXT_ACTION_LABEL } from '@/lib/logistics'
 import { services, type ServiceError } from '@/services'
 import type { Order } from '@/types/order'
 
-type Dialog = 'assign' | 'update' | 'ready' | 'collected' | 'cancel' | null
+type Dialog = 'assign' | 'update' | 'cancel' | null
 
 export function AdminOrderDetailsPage() {
   const { orderId = '' } = useParams()
@@ -107,14 +107,6 @@ export function AdminOrderDetailsPage() {
           Assign partner
         </Button>
       )
-    ) : o.fulfilment === 'collection' && (o.status === 'accepted' || o.status === 'processing') ? (
-      <Button size="sm" leftIcon={<Warehouse className="size-3.5" />} onClick={() => open('ready')}>
-        Mark ready
-      </Button>
-    ) : o.status === 'ready_for_collection' ? (
-      <Button size="sm" leftIcon={<PackageCheck className="size-3.5" />} onClick={() => open('collected')}>
-        Confirm collected
-      </Button>
     ) : undefined
 
   return (
@@ -155,7 +147,7 @@ export function AdminOrderDetailsPage() {
                   ['Buyer', o.buyerBusinessName],
                   ['Quantity', formatQuantity(o.quantity, o.listing.unit)],
                   ['Unit price', formatUnitPrice(o.listing.pricePerUnit, o.listing.unit)],
-                  ['Fulfilment', o.fulfilment === 'delivery' ? 'Delivery' : 'Collection'],
+                  ['Fulfilment', 'Delivery by a HeyCileng logistics partner'],
                   ['Preferred date', o.preferredDate ? formatDate(o.preferredDate) : 'Not specified'],
                 ].map(([label, value]) => (
                   <div key={label}>
@@ -245,31 +237,6 @@ export function AdminOrderDetailsPage() {
           onSubmit={(input) => apply(() => services.adminOrders.updateDelivery(o.id, input), `Delivery marked ${getStatusMeta('delivery', input.status).label.toLowerCase()}`)}
         />
       )}
-
-      <ConfirmDialog
-        open={dialog === 'ready'}
-        onClose={() => setDialog(null)}
-        onConfirm={() => void apply(() => services.adminOrders.markReadyForCollection(o.id, note.trim() || undefined), 'Marked ready for collection')}
-        title="Mark ready for collection?"
-        description="The buyer is notified that the order can be collected."
-        confirmLabel="Mark ready"
-        loading={busy}
-      >
-        <Textarea label="Collection instructions (optional)" rows={2} value={note} onChange={(e) => setNote(e.target.value)} hint="Shared with buyer and seller." />
-        {actionError && <Alert tone="error" className="mt-3">{actionError.message}</Alert>}
-      </ConfirmDialog>
-
-      <ConfirmDialog
-        open={dialog === 'collected'}
-        onClose={() => setDialog(null)}
-        onConfirm={() => void apply(() => services.adminOrders.markCollected(o.id), 'Order completed')}
-        title="Confirm the buyer has collected this order?"
-        description={`The order is completed and ${formatQuantity(o.quantity, o.listing.unit)} moves from reserved to sold stock.`}
-        confirmLabel="Confirm collected"
-        loading={busy}
-      >
-        {actionError && <Alert tone="error">{actionError.message}</Alert>}
-      </ConfirmDialog>
 
       <ConfirmDialog
         open={dialog === 'cancel'}

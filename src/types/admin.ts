@@ -74,7 +74,6 @@ export interface PlatformSettings {
   marketplace: {
     /** New listings need admin approval before going live. */
     requireListingReview: boolean
-    allowCollection: boolean
     maxImagesPerListing: number
   }
   matching: {

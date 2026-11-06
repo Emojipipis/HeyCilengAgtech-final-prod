@@ -134,8 +134,8 @@ export function SellerOrderDetailsPage() {
       <Alert tone={['declined', 'cancelled', 'delivery_failed'].includes(o.status) ? 'warning' : 'info'} title={meta.label}>
         {o.status === 'pending'
           ? 'This request hasn’t reserved any stock. Accepting reserves the quantity; declining leaves your stock unchanged.'
-          : ['processing', 'dispatched', 'ready_for_collection'].includes(o.status)
-            ? `${meta.description} Dispatch, delivery and collection updates are managed by HeyCileng.`
+          : ['processing', 'dispatched'].includes(o.status)
+            ? `${meta.description} Pickup and delivery are handled by HeyCileng’s logistics partner.`
             : meta.description}
       </Alert>
 
@@ -151,7 +151,7 @@ export function SellerOrderDetailsPage() {
                   ['Buyer', o.buyerBusinessName],
                   ['Quantity', formatQuantity(o.quantity, o.listing.unit)],
                   ['Unit price', formatUnitPrice(o.listing.pricePerUnit, o.listing.unit)],
-                  ['Fulfilment', o.fulfilment === 'delivery' ? 'Delivery (HeyCileng logistics)' : 'Buyer collects'],
+                  ['Fulfilment', 'Picked up and delivered by HeyCileng logistics'],
                   ['Preferred date', o.preferredDate ? formatDate(o.preferredDate) : 'Not specified'],
                 ].map(([label, value]) => (
                   <div key={label}>
@@ -220,7 +220,7 @@ export function SellerOrderDetailsPage() {
         onClose={() => setAction(null)}
         onConfirm={() => void run()}
         title={`Accept order ${o.reference}?`}
-        description={`${formatQuantity(o.quantity, o.listing.unit)} will be reserved for this buyer${available !== undefined ? ` (you have ${formatQuantity(available, o.listing.unit)} available)` : ''}. HeyCileng will then arrange ${o.fulfilment === 'delivery' ? 'delivery' : 'collection'}.`}
+        description={`${formatQuantity(o.quantity, o.listing.unit)} will be reserved for this buyer${available !== undefined ? ` (you have ${formatQuantity(available, o.listing.unit)} available)` : ''}. HeyCileng’s logistics partner will then pick up and deliver it.`}
         confirmLabel="Accept and reserve stock"
         loading={busy}
       >

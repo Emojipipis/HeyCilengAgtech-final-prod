@@ -1,4 +1,4 @@
-import { CircleCheckBig, Info, Truck, Warehouse } from 'lucide-react'
+import { CircleCheckBig, Info, Truck } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Alert } from '@/components/ui/Alert'
 import { Button, ButtonLink } from '@/components/ui/Button'
@@ -6,14 +6,12 @@ import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { Textarea } from '@/components/ui/Textarea'
 import { UNITS } from '@/config/catalog'
-import { useAsync } from '@/hooks/useAsync'
 import { useToast } from '@/hooks/useToast'
-import { cn } from '@/lib/cn'
 import { formatCurrency, formatQuantity, formatUnitPrice, todayISODate } from '@/lib/format'
 import { availableQuantity } from '@/lib/inventory'
 import { services, type ServiceError } from '@/services'
 import type { MarketplaceListing } from '@/types/listing'
-import type { FulfilmentMethod, Order } from '@/types/order'
+import type { Order } from '@/types/order'
 
 interface RequestOrderModalProps {
   item: MarketplaceListing | null
@@ -39,7 +37,6 @@ function RequestOrderForm({ item, onClose, ordersPath, defaultQuantity }: Omit<R
   const initial = Math.min(available, Math.max(listing.minOrderQuantity, defaultQuantity ?? listing.minOrderQuantity))
 
   const [quantity, setQuantity] = useState(String(initial))
-  const [fulfilment, setFulfilment] = useState<FulfilmentMethod>('delivery')
   const [address, setAddress] = useState('')
   const [preferredDate, setPreferredDate] = useState('')
   const [note, setNote] = useState('')
@@ -47,9 +44,6 @@ function RequestOrderForm({ item, onClose, ordersPath, defaultQuantity }: Omit<R
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<ServiceError | null>(null)
   const [created, setCreated] = useState<Order | null>(null)
-  const config = useAsync(() => services.platformConfig.get(), 'platform-config')
-  // Collection is offered unless HeyCileng has switched it off.
-  const allowCollection = config.data?.allowCollection ?? true
 
   const qty = Number(quantity)
   const subtotal = Number.isFinite(qty) && qty > 0 ? qty * listing.pricePerUnit : 0
@@ -66,7 +60,7 @@ function RequestOrderForm({ item, onClose, ordersPath, defaultQuantity }: Omit<R
             : qty > available
               ? `Only ${formatQuantity(available, listing.unit)} is available.`
               : undefined,
-      address: fulfilment === 'delivery' && address.trim().length < 10 ? 'Enter the full delivery address.' : undefined,
+      address: address.trim().length < 10 ? 'Enter the full delivery address.' : undefined,
       preferredDate: preferredDate && preferredDate < todayISODate() ? 'Choose a date from today onwards.' : undefined,
     }
     setErrors(next)
@@ -77,8 +71,9 @@ function RequestOrderForm({ item, onClose, ordersPath, defaultQuantity }: Omit<R
     const result = await services.orders.requestOrder({
       listingId: listing.id,
       quantity: qty,
-      fulfilment: allowCollection ? fulfilment : 'delivery',
-      deliveryAddress: fulfilment === 'delivery' || !allowCollection ? address.trim() : undefined,
+      // Every order is delivered by a HeyCileng logistics partner — buyers never collect from sellers.
+      fulfilment: 'delivery',
+      deliveryAddress: address.trim(),
       preferredDate: preferredDate || undefined,
       buyerNote: note.trim() || undefined,
     })
@@ -116,22 +111,6 @@ function RequestOrderForm({ item, onClose, ordersPath, defaultQuantity }: Omit<R
     )
   }
 
-  const methodOption = (value: FulfilmentMethod, title: string, description: string, Icon: typeof Truck) => (
-    <label
-      className={cn(
-        'flex cursor-pointer gap-3 rounded-lg border-2 p-3.5 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring',
-        fulfilment === value ? 'border-action bg-leaf-50 dark:bg-leaf-500/10' : 'border-border hover:border-border-strong',
-      )}
-    >
-      <input type="radio" name="fulfilment" value={value} checked={fulfilment === value} onChange={() => setFulfilment(value)} className="sr-only" />
-      <Icon className={cn('mt-0.5 size-5 shrink-0', fulfilment === value ? 'text-action' : 'text-subtle')} aria-hidden="true" />
-      <span>
-        <span className="block text-sm font-semibold text-fg">{title}</span>
-        <span className="block text-xs text-muted">{description}</span>
-      </span>
-    </label>
-  )
-
   return (
     <form noValidate onSubmit={onSubmit} className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-muted p-3 text-sm">
@@ -154,28 +133,26 @@ function RequestOrderForm({ item, onClose, ordersPath, defaultQuantity }: Omit<R
         hint={`Minimum order ${formatQuantity(listing.minOrderQuantity, listing.unit)} · maximum ${formatQuantity(available, listing.unit)}`}
       />
 
-      <fieldset>
-        <legend className="mb-2 text-sm font-medium">Fulfilment</legend>
-        <div className={cn('grid gap-3', allowCollection && 'sm:grid-cols-2')}>
-          {methodOption('delivery', 'Delivery', 'HeyCileng assigns a logistics partner.', Truck)}
-          {allowCollection && methodOption('collection', 'Collection', 'You collect from the seller’s site.', Warehouse)}
-        </div>
-      </fieldset>
+      <div className="flex gap-3 rounded-lg border border-border p-3.5">
+        <Truck className="mt-0.5 size-5 shrink-0 text-action" aria-hidden="true" />
+        <p className="text-sm">
+          <span className="block font-semibold text-fg">Delivered by HeyCileng</span>
+          <span className="block text-xs text-muted">A HeyCileng logistics partner picks up from the seller and delivers to you. You never need to visit or contact the seller.</span>
+        </p>
+      </div>
 
-      {fulfilment === 'delivery' && (
-        <Textarea
-          label="Delivery address"
-          required
-          rows={2}
-          value={address}
-          onChange={(e) => {
-            setAddress(e.target.value)
-            setErrors((x) => ({ ...x, address: undefined }))
-          }}
-          error={errors.address}
-          hint="Shared with the assigned logistics partner only."
-        />
-      )}
+      <Textarea
+        label="Delivery address"
+        required
+        rows={2}
+        value={address}
+        onChange={(e) => {
+          setAddress(e.target.value)
+          setErrors((x) => ({ ...x, address: undefined }))
+        }}
+        error={errors.address}
+        hint="Shared with the assigned logistics partner only — never with the seller."
+      />
 
       <Input
         label="Preferred date"
@@ -204,7 +181,7 @@ function RequestOrderForm({ item, onClose, ordersPath, defaultQuantity }: Omit<R
           <span className="font-display text-xl font-bold tabular-nums">{formatCurrency(subtotal)}</span>
         </div>
         <p className="mt-1 text-xs text-subtle">
-          {fulfilment === 'delivery' ? 'Delivery fee and who pays it are confirmed by HeyCileng after the seller accepts. ' : ''}
+          Delivery fee and who pays it are confirmed by HeyCileng after the seller accepts.{' '}
           No payment is taken now. You’ll pay HeyCileng through Paystack after the seller accepts.
         </p>
       </div>
