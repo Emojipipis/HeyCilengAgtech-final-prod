@@ -2,7 +2,7 @@ import { createContext } from 'react'
 import type { Session, User } from '@/types/user'
 
 export interface SessionContextValue {
-  /** Real backend session. Always null until Supabase Auth is connected. */
+  /** Real backend session (Supabase Auth); null when signed out or in Demo Preview Mode. */
   session: Session | null
   status: 'loading' | 'authenticated' | 'anonymous'
   signOut: () => Promise<void>

@@ -1,4 +1,4 @@
-import { env } from '@/config/env'
+import { env, isBackendConfigured } from '@/config/env'
 import { demoAdminInsightsService } from './demo/adminInsightsService'
 import { demoAdminOrderService } from './demo/adminOrderService'
 import {
@@ -51,12 +51,48 @@ import type {
   SupportService,
 } from './types'
 
+import {
+  supabaseAdminListingService,
+  supabaseAdminSupportService,
+  supabaseAdminUserService,
+  supabaseAnnouncementService,
+  supabaseAuditService,
+  supabaseDisputeService,
+  supabaseInsightsService,
+  supabaseSettingsService,
+} from './supabase/admin'
+import {
+  supabaseContactService,
+  supabaseNotificationService,
+  supabasePlatformConfigService,
+  supabaseProfileService,
+  supabaseSupportService,
+} from './supabase/account'
+import { supabaseAuthService } from './supabase/authService'
+import { supabaseMarketplaceService, supabaseMatchingService, supabaseRequirementService } from './supabase/marketplace'
+import {
+  supabaseAdminOrderService,
+  supabaseLogisticsService,
+  supabaseOrderService,
+  supabaseSellerListingService,
+  supabaseSellerOrderService,
+} from './supabase/orders'
+
 /**
- * Single access point for data services. Demo fixtures are served only in Demo Preview Mode;
- * otherwise data services report "not connected". Replace with Supabase-backed implementations
- * here once the backend exists — no page changes needed.
+ * Single access point for data services. Three modes:
+ * - Demo Preview Mode (VITE_DEMO_MODE=true): labelled in-memory fixtures.
+ * - Supabase configured: live database, with RLS and database functions enforcing the rules.
+ * - Neither: data services report "not connected".
  */
-const demo = env.demoMode
+const mode: 'demo' | 'supabase' | 'none' = env.demoMode ? 'demo' : isBackendConfigured ? 'supabase' : 'none'
+
+function pick<T extends object>(demo: T, live: T, label: string): T {
+  if (mode === 'demo') return demo
+  if (mode === 'supabase') return live
+  return unconnectedService(label) as T
+}
+
+export const backendMode = mode
 
 export const services: {
   auth: AuthService
@@ -83,30 +119,30 @@ export const services: {
   payments: PaymentService
   platformConfig: PlatformConfigService
 } = {
-  auth: demoAuthService,
-  contact: demoContactService,
-  marketplace: demo ? demoMarketplaceService : unconnectedService('The marketplace'),
-  requirements: demo ? demoRequirementService : unconnectedService('Requirements'),
-  matching: demo ? demoMatchingService : unconnectedService('Matchmaking'),
-  orders: demo ? demoOrderService : unconnectedService('Orders'),
-  notifications: demo ? demoNotificationService : unconnectedService('Notifications'),
-  profile: demo ? demoProfileService : unconnectedService('Your profile'),
-  sellerListings: demo ? demoSellerListingService : unconnectedService('Your listings'),
-  sellerOrders: demo ? demoSellerOrderService : unconnectedService('Incoming orders'),
-  adminOrders: demo ? demoAdminOrderService : unconnectedService('Order management'),
-  logistics: demo ? demoLogisticsService : unconnectedService('Logistics'),
-  support: demo ? demoSupportService : unconnectedService('Support'),
-  adminUsers: demo ? demoAdminUserService : unconnectedService('User management'),
-  adminListings: demo ? demoAdminListingService : unconnectedService('Listing management'),
-  adminSupport: demo ? demoAdminSupportService : unconnectedService('The support queue'),
-  disputes: demo ? demoDisputeService : unconnectedService('Disputes'),
-  announcements: demo ? demoAnnouncementService : unconnectedService('Announcements'),
-  settings: demo ? demoSettingsService : unconnectedService('Platform settings'),
-  audit: demo ? demoAuditService : unconnectedService('Audit logs'),
-  insights: demo ? demoAdminInsightsService : unconnectedService('Reports'),
+  auth: mode === 'supabase' ? supabaseAuthService : demoAuthService,
+  contact: mode === 'supabase' ? supabaseContactService : demoContactService,
+  marketplace: pick(demoMarketplaceService, supabaseMarketplaceService, 'The marketplace'),
+  requirements: pick(demoRequirementService, supabaseRequirementService, 'Requirements'),
+  matching: pick(demoMatchingService, supabaseMatchingService, 'Matchmaking'),
+  orders: pick(demoOrderService, supabaseOrderService, 'Orders'),
+  notifications: pick(demoNotificationService, supabaseNotificationService, 'Notifications'),
+  profile: pick(demoProfileService, supabaseProfileService, 'Your profile'),
+  sellerListings: pick(demoSellerListingService, supabaseSellerListingService, 'Your listings'),
+  sellerOrders: pick(demoSellerOrderService, supabaseSellerOrderService, 'Incoming orders'),
+  adminOrders: pick(demoAdminOrderService, supabaseAdminOrderService, 'Order management'),
+  logistics: pick(demoLogisticsService, supabaseLogisticsService, 'Logistics'),
+  support: pick(demoSupportService, supabaseSupportService, 'Support'),
+  adminUsers: pick(demoAdminUserService, supabaseAdminUserService, 'User management'),
+  adminListings: pick(demoAdminListingService, supabaseAdminListingService, 'Listing management'),
+  adminSupport: pick(demoAdminSupportService, supabaseAdminSupportService, 'The support queue'),
+  disputes: pick(demoDisputeService, supabaseDisputeService, 'Disputes'),
+  announcements: pick(demoAnnouncementService, supabaseAnnouncementService, 'Announcements'),
+  settings: pick(demoSettingsService, supabaseSettingsService, 'Platform settings'),
+  audit: pick(demoAuditService, supabaseAuditService, 'Audit logs'),
+  insights: pick(demoAdminInsightsService, supabaseInsightsService, 'Reports'),
   // Paystack isn't integrated in any mode.
   payments: demoPaymentService,
-  platformConfig: demo ? demoPlatformConfigService : unconnectedService('Platform configuration'),
+  platformConfig: pick(demoPlatformConfigService, supabasePlatformConfigService, 'Platform configuration'),
 }
 
 export type {
@@ -121,3 +157,6 @@ export type {
   ServiceError,
   ServiceResult,
 } from './types'
+
+// Load the matching weights HeyCileng has configured before any matches are ranked.
+if (mode === 'supabase') void supabasePlatformConfigService.get()

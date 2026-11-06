@@ -175,7 +175,7 @@ export function OtpVerification({
             </button>
           )}
         </p>
-        <p className="text-xs text-subtle">Check your spam folder. Codes expire after a short time.</p>
+        <p className="text-center text-xs text-subtle">Check your spam folder. If the email has a confirmation link instead of a code, open the link — that works too. Codes expire after a short time.</p>
         {onBack && <BackButton onClick={onBack} label={backLabel} />}
       </div>
     </form>

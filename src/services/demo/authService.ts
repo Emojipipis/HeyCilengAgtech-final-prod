@@ -37,4 +37,11 @@ export const demoAuthService: AuthService = {
   async signOut() {
     return { ok: true, data: null }
   },
+  // Demo Preview Mode never has a real session.
+  async getSession() {
+    return null
+  },
+  onSessionChange() {
+    return () => undefined
+  },
 }

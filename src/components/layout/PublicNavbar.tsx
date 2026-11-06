@@ -1,14 +1,16 @@
 import { Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Button } from '@/components/ui/Button'
+import { Button, ButtonLink } from '@/components/ui/Button'
 import { Container } from '@/components/shared/Section'
 import { Logo } from '@/components/shared/Logo'
 import { PUBLIC_NAV } from '@/config/navigation'
+import { DASHBOARD_PATH } from '@/config/routes'
 import { useActiveSection } from '@/hooks/useActiveSection'
 import { useAuthModal } from '@/hooks/useAuthModal'
 import { useEscapeKey } from '@/hooks/useEscapeKey'
 import { useScrollLock } from '@/hooks/useScrollLock'
+import { useSession } from '@/hooks/useSession'
 import { cn } from '@/lib/cn'
 import { SectionLink } from './SectionLink'
 import { ThemeToggle } from './ThemeToggle'
@@ -16,6 +18,8 @@ import { ThemeToggle } from './ThemeToggle'
 export function PublicNavbar() {
   const { pathname } = useLocation()
   const { openAuth } = useAuthModal()
+  const { session } = useSession()
+  const dashboard = session ? DASHBOARD_PATH[session.user.role] : null
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const isHome = pathname === '/'
@@ -85,12 +89,20 @@ export function PublicNavbar() {
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
           <div className="hidden items-center gap-2 sm:flex">
-            <Button variant="ghost" onClick={() => openAuth('login')}>
-              Login
-            </Button>
-            <Button variant="primary" onClick={() => openAuth('signup')}>
-              Get Started
-            </Button>
+            {dashboard ? (
+              <ButtonLink to={dashboard} variant="primary">
+                Dashboard
+              </ButtonLink>
+            ) : (
+              <>
+                <Button variant="ghost" onClick={() => openAuth('login')}>
+                  Login
+                </Button>
+                <Button variant="primary" onClick={() => openAuth('signup')}>
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
           <button
             type="button"
@@ -129,12 +141,20 @@ export function PublicNavbar() {
               </ul>
             </nav>
             <div className="mt-4 grid gap-2 border-t border-border pt-5">
-              <Button variant="outline" size="lg" onClick={() => openFromMenu('login')}>
-                Login
-              </Button>
-              <Button variant="primary" size="lg" onClick={() => openFromMenu('signup')}>
-                Get Started
-              </Button>
+              {dashboard ? (
+                <ButtonLink to={dashboard} variant="primary" size="lg" onClick={() => setMenuOpen(false)}>
+                  Dashboard
+                </ButtonLink>
+              ) : (
+                <>
+                  <Button variant="outline" size="lg" onClick={() => openFromMenu('login')}>
+                    Login
+                  </Button>
+                  <Button variant="primary" size="lg" onClick={() => openFromMenu('signup')}>
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </Container>
         </div>

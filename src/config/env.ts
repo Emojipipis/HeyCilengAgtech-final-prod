@@ -9,5 +9,5 @@ export const env = {
   supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY ?? '',
 } as const
 
-/** True once Supabase credentials are configured. The integration itself is a later phase. */
+/** True once Supabase credentials are configured (used whenever Demo Preview Mode is off). */
 export const isBackendConfigured = Boolean(env.supabaseUrl && env.supabaseAnonKey)

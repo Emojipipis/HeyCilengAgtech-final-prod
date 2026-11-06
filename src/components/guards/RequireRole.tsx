@@ -5,6 +5,7 @@ import { ViewerContext } from '@/context/session-context'
 import { DEMO_USERS } from '@/fixtures/demo/users'
 import { setDemoActor } from '@/services/demo/actor'
 import { useSession } from '@/hooks/useSession'
+import { LoadingState } from '@/components/ui/States'
 import type { Role } from '@/types/user'
 
 /**
@@ -15,7 +16,7 @@ import type { Role } from '@/types/user'
  * - Otherwise → back to the homepage with the login modal open.
  */
 export function RequireRole({ role, children }: { role: Role; children: ReactNode }) {
-  const { session } = useSession()
+  const { session, status } = useSession()
   const location = useLocation()
 
   const viewer = useMemo(() => {
@@ -27,6 +28,9 @@ export function RequireRole({ role, children }: { role: Role; children: ReactNod
     }
     return null
   }, [session, role])
+
+  // Wait for a stored session to be restored before deciding anything.
+  if (status === 'loading' && !env.demoMode) return <LoadingState label="Checking your session…" className="min-h-dvh" />
 
   if (!viewer) {
     if (session) return <Navigate to="/" replace />

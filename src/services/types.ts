@@ -82,6 +82,10 @@ export interface AuthService {
   /** Sets the new password after a successful reset verification. */
   updatePassword(newPassword: string): Promise<ServiceResult<{ updated: true }>>
   signOut(): Promise<ServiceResult<null>>
+  /** The current session (restored from storage), or null when signed out. */
+  getSession(): Promise<Session | null>
+  /** Notifies sign-in, sign-out and token refresh. Returns an unsubscribe function. */
+  onSessionChange(callback: (session: Session | null) => void): () => void
 }
 
 /*
