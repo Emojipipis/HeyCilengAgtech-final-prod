@@ -13,6 +13,8 @@ import { CATEGORY_BY_ID } from '@/config/catalog'
 import { getStatusMeta } from '@/config/statuses'
 import { DeliveryDetails } from '@/features/orders/DeliveryDetails'
 import { BuyerPaymentCard } from '@/features/payments/BuyerPaymentCard'
+import { CheckoutButton } from '@/features/payments/CheckoutButton'
+import { amountDue, isPayable } from '@/lib/payments'
 import { OrderTimeline } from '@/features/orders/OrderTimeline'
 import { useAsync } from '@/hooks/useAsync'
 import { useToast } from '@/hooks/useToast'
@@ -87,9 +89,21 @@ export function BuyerOrderDetailsPage() {
         )}
       </div>
 
-      <Alert tone={['declined', 'cancelled', 'delivery_failed'].includes(order.status) ? 'warning' : 'info'} title={meta.label}>
-        {meta.description}
-      </Alert>
+      {isPayable(order) ? (
+        <div className="flex flex-col gap-4 rounded-xl border-2 border-action bg-leaf-50 p-5 sm:flex-row sm:items-center sm:justify-between dark:bg-leaf-500/10">
+          <div>
+            <p className="font-semibold text-fg">Payment due: {formatCurrency(amountDue(order))}</p>
+            <p className="mt-1 text-sm text-muted">The seller has accepted and HeyCileng has confirmed the delivery fee. Pay now so HeyCileng’s logistics partner can deliver.</p>
+          </div>
+          <div className="shrink-0 sm:w-72">
+            <CheckoutButton order={order} />
+          </div>
+        </div>
+      ) : (
+        <Alert tone={['declined', 'cancelled', 'delivery_failed'].includes(order.status) ? 'warning' : 'info'} title={meta.label}>
+          {meta.description}
+        </Alert>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr] *:min-w-0">
         <div className="space-y-6">

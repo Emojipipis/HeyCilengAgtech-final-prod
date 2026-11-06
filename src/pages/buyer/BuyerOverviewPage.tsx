@@ -1,4 +1,4 @@
-import { ArrowRight, Bell, ClipboardList, Heart, Package, Plus, Sparkles, Store } from 'lucide-react'
+import { ArrowRight, Bell, ClipboardList, CreditCard, Heart, Package, Plus, Sparkles, Store } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { ButtonLink } from '@/components/ui/Button'
@@ -15,7 +15,8 @@ import { OrdersTable } from '@/features/orders/OrdersTable'
 import { useAsync } from '@/hooks/useAsync'
 import { useSavedListings } from '@/hooks/useSavedListings'
 import { useViewer } from '@/hooks/useSession'
-import { formatQuantity } from '@/lib/format'
+import { formatCurrency, formatQuantity } from '@/lib/format'
+import { amountDue, isPayable } from '@/lib/payments'
 import { effectiveRequirementStatus } from '@/lib/requirements'
 import { services } from '@/services'
 import type { OrderStatus } from '@/types/status'
@@ -37,6 +38,7 @@ export function BuyerOverviewPage() {
   const notifications = useAsync(() => services.notifications.list(), 'notifications')
 
   const activeOrders = (orders.data ?? []).filter((o) => ACTIVE_ORDER.includes(o.status))
+  const payable = (orders.data ?? []).filter(isPayable)
   const activeRequirements = (requirements.data ?? []).filter((r) => effectiveRequirementStatus(r) === 'active')
   // One recommended card per listing, best score first.
   const recommended = [...new Map((matches.data ?? []).map((m) => [m.listing.listing.id, m])).values()].slice(0, 3)
@@ -58,6 +60,23 @@ export function BuyerOverviewPage() {
           </>
         }
       />
+
+      {payable.length > 0 && (
+        <div className="mb-6 flex flex-col gap-3 rounded-xl border-2 border-action bg-leaf-50 p-4 sm:flex-row sm:items-center sm:justify-between dark:bg-leaf-500/10">
+          <p className="flex items-center gap-2 text-sm">
+            <CreditCard className="size-5 shrink-0 text-action" aria-hidden="true" />
+            <span>
+              <span className="font-semibold text-fg">
+                {payable.length === 1 ? '1 order is' : `${payable.length} orders are`} ready to pay
+              </span>{' '}
+              <span className="text-muted">· {formatCurrency(payable.reduce((sum, o) => sum + amountDue(o), 0))} due</span>
+            </span>
+          </p>
+          <ButtonLink to="/buyer/payments" leftIcon={<CreditCard className="size-4" />}>
+            Go to checkout
+          </ButtonLink>
+        </div>
+      )}
 
       <section aria-label="Summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Active orders" value={orders.loading ? '—' : activeOrders.length} icon={<Package />} hint="Pending, accepted or on the way" />

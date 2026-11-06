@@ -2,12 +2,12 @@ import { CircleCheckBig, CreditCard, LoaderCircle, RotateCcw, ShieldCheck } from
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Alert } from '@/components/ui/Alert'
-import { Button } from '@/components/ui/Button'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { formatCurrency, formatDateTime } from '@/lib/format'
 import { amountDue, awaitingDeliveryFee, buyerDeliveryFee, isPayable } from '@/lib/payments'
-import { services, type ServiceError } from '@/services'
+import { services } from '@/services'
 import type { Order } from '@/types/order'
+import { CheckoutButton } from './CheckoutButton'
 
 type ReturnState = { kind: 'idle' } | { kind: 'checking' } | { kind: 'paid' } | { kind: 'pending' } | { kind: 'failed' } | { kind: 'cancelled' } | { kind: 'error'; message: string }
 
@@ -17,8 +17,6 @@ type ReturnState = { kind: 'idle' } | { kind: 'checking' } | { kind: 'paid' } | 
  */
 export function BuyerPaymentCard({ order, onChanged }: { order: Order; onChanged: () => void }) {
   const [params, setParams] = useSearchParams()
-  const [starting, setStarting] = useState(false)
-  const [startError, setStartError] = useState<ServiceError | null>(null)
   // Arriving back from Paystack: ?payment=return&reference=…(&cancelled=1). Read once on mount.
   const [returnInfo] = useState(() => ({
     reference: params.get('payment') === 'return' ? params.get('reference') : null,
@@ -44,18 +42,6 @@ export function BuyerPaymentCard({ order, onChanged }: { order: Order; onChanged
       onChanged()
     })
   }, [returnInfo, params, setParams, onChanged])
-
-  const pay = async () => {
-    setStarting(true)
-    setStartError(null)
-    const r = await services.payments.startCheckout(order.id)
-    if (r.ok) {
-      window.location.assign(r.data.authorizationUrl)
-      return
-    }
-    setStarting(false)
-    setStartError(r.error)
-  }
 
   const fee = buyerDeliveryFee(order)
   const total = amountDue(order)
@@ -142,10 +128,7 @@ export function BuyerPaymentCard({ order, onChanged }: { order: Order; onChanged
 
         {isPayable(order) && (
           <div className="space-y-3">
-            {startError && <Alert tone={startError.code === 'not_connected' ? 'warning' : 'error'}>{startError.message}</Alert>}
-            <Button fullWidth size="lg" loading={starting} leftIcon={<CreditCard className="size-4" />} onClick={() => void pay()}>
-              {starting ? 'Opening Paystack…' : `Pay ${formatCurrency(total)} with Paystack`}
-            </Button>
+            <CheckoutButton order={order} />
             <p className="flex gap-2 text-xs text-subtle">
               <ShieldCheck className="mt-px size-3.5 shrink-0" aria-hidden="true" />
               You’ll complete payment on Paystack’s secure page. HeyCileng arranges delivery after payment is confirmed and pays the seller once the order is complete.

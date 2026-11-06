@@ -64,7 +64,13 @@ export const BUYER_NAV: DashboardNavGroup[] = [
       { label: 'Matches', to: '/buyer/matches', icon: Sparkles },
     ],
   },
-  { label: 'Orders', items: [{ label: 'My orders', to: '/buyer/orders', icon: Package }] },
+  {
+    label: 'Orders',
+    items: [
+      { label: 'My orders', to: '/buyer/orders', icon: Package },
+      { label: 'Payments', to: '/buyer/payments', icon: CreditCard },
+    ],
+  },
   {
     label: 'Account',
     items: [

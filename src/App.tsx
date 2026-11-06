@@ -24,6 +24,7 @@ import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
 import { BuyerMarketplacePage } from '@/pages/buyer/BuyerMarketplacePage'
 import { BuyerOrderDetailsPage } from '@/pages/buyer/BuyerOrderDetailsPage'
 import { BuyerOrdersPage } from '@/pages/buyer/BuyerOrdersPage'
+import { BuyerPaymentsPage } from '@/pages/buyer/BuyerPaymentsPage'
 import { BuyerOverviewPage } from '@/pages/buyer/BuyerOverviewPage'
 import { BuyerProfilePage } from '@/pages/buyer/BuyerProfilePage'
 import { ListingDetailsPage } from '@/pages/buyer/ListingDetailsPage'
@@ -84,6 +85,7 @@ const router = createBrowserRouter([
           { path: 'matches', element: <MatchesPage /> },
           { path: 'orders', element: <BuyerOrdersPage /> },
           { path: 'orders/:orderId', element: <BuyerOrderDetailsPage /> },
+          { path: 'payments', element: <BuyerPaymentsPage /> },
           { path: 'notifications', element: <NotificationsPage /> },
           { path: 'support', element: <SupportPage /> },
           { path: 'support/:ticketId', element: <SupportTicketPage /> },
