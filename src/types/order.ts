@@ -80,6 +80,8 @@ export interface Order {
   delivery: Delivery | null
   payment: OrderPayment
   timeline: OrderEvent[]
+  /** Reasons typed by the buyer or seller (cancel/decline). Visible to HeyCileng administrators only. */
+  partyNotes?: { actor: 'buyer' | 'seller'; title: string; note: string; at: string }[]
   createdAt: string
   updatedAt: string
   isDemo?: boolean

@@ -14,6 +14,7 @@ import { hasErrors, type Errors } from '@/lib/validation'
 import type { ServiceError } from '@/services'
 import type { ApplicationId, CategoryId, QualityTag, Unit } from '@/types/catalog'
 import type { Requirement, RequirementInput } from '@/types/requirement'
+import { CONTACT_DETAILS_MESSAGE, containsContactDetails } from '@/lib/contactDetails'
 
 interface FormValues {
   title: string
@@ -62,12 +63,14 @@ function validate(v: FormValues): Errors<FormValues> {
   const max = Number(v.budgetMax)
   const min = v.budgetMin ? Number(v.budgetMin) : undefined
   return {
-    title: v.title.trim().length >= 4 ? undefined : 'Give the requirement a short title.',
+    title: v.title.trim().length < 4 ? 'Give the requirement a short title.' : containsContactDetails(v.title) ? CONTACT_DETAILS_MESSAGE : undefined,
     category: v.category ? undefined : 'Choose a material category.',
     quantity: qty > 0 ? undefined : 'Enter the quantity you need.',
     budgetMax: !(max > 0) ? 'Enter your maximum price per unit.' : min !== undefined && min > max ? 'Maximum must be at least the minimum.' : undefined,
     budgetMin: min !== undefined && !(min >= 0) ? 'Enter a valid amount.' : undefined,
     preferredLocation: v.preferredLocation ? undefined : 'Choose where you need the material.',
+    qualitySpecifications: containsContactDetails(v.qualitySpecifications) ? CONTACT_DETAILS_MESSAGE : undefined,
+    additionalSpecifications: containsContactDetails(v.additionalSpecifications) ? CONTACT_DETAILS_MESSAGE : undefined,
     intendedApplication: v.intendedApplication ? undefined : 'Choose how you’ll use the material.',
     expiresAt: !v.expiresAt ? 'Choose an expiry date.' : v.expiresAt <= todayISODate() ? 'The expiry date must be in the future.' : undefined,
   }
@@ -241,6 +244,7 @@ function RequirementForm({ requirement, onClose, onSubmit }: Omit<RequirementFor
           placeholder="e.g. Moisture ≤ 12%, minimal sand"
           value={values.qualitySpecifications}
           onChange={(e) => set('qualitySpecifications', e.target.value)}
+          error={errors.qualitySpecifications}
         />
         <Textarea
           label="Additional specifications"
@@ -248,6 +252,7 @@ function RequirementForm({ requirement, onClose, onSubmit }: Omit<RequirementFor
           placeholder="Packaging, delivery frequency, trial batch…"
           value={values.additionalSpecifications}
           onChange={(e) => set('additionalSpecifications', e.target.value)}
+          error={errors.additionalSpecifications}
         />
         <Input
           label="Requirement expires on"

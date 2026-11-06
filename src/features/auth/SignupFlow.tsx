@@ -15,6 +15,7 @@ import { AuthErrorAlert, AuthHeader, AuthSuccess, BackButton, PasswordStrength }
 import { DEFAULT_RESEND_COOLDOWN } from './constants'
 import { OtpVerification } from './OtpVerification'
 import { TermsDialog } from './TermsDialog'
+import { CONTACT_DETAILS_MESSAGE, containsContactDetails } from '@/lib/contactDetails'
 
 type Step = 'type' | 'details' | 'business' | 'verify' | 'done'
 
@@ -64,10 +65,14 @@ function validateDetails(v: FormValues, requireTerms: boolean): Errors<FormValue
 
 function validateBusiness(v: FormValues): Errors<FormValues> {
   return {
-    businessName: v.businessName.trim().length >= 2 ? undefined : 'Enter your business name.',
-    businessLocation: v.businessLocation.trim().length >= 2 ? undefined : 'Enter your business location.',
+    businessName: v.businessName.trim().length < 2 ? 'Enter your business name.' : containsContactDetails(v.businessName) ? CONTACT_DETAILS_MESSAGE : undefined,
+    businessLocation: v.businessLocation.trim().length < 2 ? 'Enter your business location.' : containsContactDetails(v.businessLocation) ? CONTACT_DETAILS_MESSAGE : undefined,
     businessDescription:
-      v.businessDescription.trim().length >= 30 ? undefined : 'Describe your business in at least 30 characters.',
+      v.businessDescription.trim().length < 30
+        ? 'Describe your business in at least 30 characters.'
+        : containsContactDetails(v.businessDescription)
+          ? CONTACT_DETAILS_MESSAGE
+          : undefined,
     acceptedTerms: v.acceptedTerms ? undefined : 'You must accept the terms and conditions.',
   }
 }

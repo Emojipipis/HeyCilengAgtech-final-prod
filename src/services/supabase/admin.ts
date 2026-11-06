@@ -129,6 +129,8 @@ async function disputes(): Promise<Dispute[]> {
   const { data: orders, error: orderError } = await supabase.from('orders').select('*').in('id', data.map((d) => d.order_id)).returns<OrderRow[]>()
   if (orderError) throw orderError
   const byId = new Map(orders.map((o) => [o.id, o]))
+  // Order snapshots name the seller "HeyCileng seller"; admins see the real business name.
+  const sellerNames = new Map((await profiles()).map((p) => [p.id, p.business_name || p.full_name]))
   return data.map((d) => {
     const o = byId.get(d.order_id)
     return {
@@ -136,7 +138,7 @@ async function disputes(): Promise<Dispute[]> {
       reference: d.reference,
       order: { id: d.order_id, reference: o?.reference ?? '', material: o?.listing.name ?? '' },
       raisedBy: d.raised_by,
-      raisedByName: d.raised_by === 'buyer' ? (o?.buyer_business_name ?? 'Buyer') : (o?.listing.sellerBusinessName ?? 'Seller'),
+      raisedByName: d.raised_by === 'buyer' ? (o?.buyer_business_name ?? 'Buyer') : ((o && sellerNames.get(o.seller_id)) ?? 'Seller'),
       reason: d.reason,
       description: d.description,
       status: d.status,
@@ -238,7 +240,12 @@ async function insightsData(): Promise<InsightsData> {
     sellers: people.filter((p) => p.role === 'seller').map((p) => ({ id: p.id, businessName: p.business_name || p.full_name })),
     listings: listingRows.data!.map(toListing),
     requirements: requirementRows.data!.map(toRequirement),
-    orders: orderRows.data!.map((o) => toOrder(o, eventRows.data!)),
+    // Order snapshots are anonymised; reports use the real seller names.
+    orders: orderRows.data!.map((o) => {
+      const order = toOrder(o, eventRows.data!)
+      const seller = people.find((p) => p.id === order.sellerId)
+      return seller ? { ...order, listing: { ...order.listing, sellerBusinessName: seller.business_name || seller.full_name } } : order
+    }),
     tickets: (ticketRows.data ?? []) as InsightsData['tickets'],
     disputes: (disputeRows.data ?? []) as InsightsData['disputes'],
     settings,

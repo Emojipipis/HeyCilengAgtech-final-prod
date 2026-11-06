@@ -20,6 +20,7 @@ import type { SellerPublicProfile } from '@/types/user'
 import { ListingCard } from '../marketplace/ListingCard'
 import { ListingImagesField } from './ListingImagesField'
 import { StockBar } from './StockBar'
+import { CONTACT_DETAILS_MESSAGE, containsContactDetails } from '@/lib/contactDetails'
 
 interface FormValues {
   name: string
@@ -60,9 +61,11 @@ function validate(v: FormValues, listing?: Listing): Errors<FormValues> {
   const min = Number(v.minOrderQuantity)
   const committed = listing ? listing.reservedQuantity + listing.soldQuantity : 0
   return {
-    name: v.name.trim().length >= 3 ? undefined : 'Enter a product name.',
+    name: v.name.trim().length < 3 ? 'Enter a product name.' : containsContactDetails(v.name) ? CONTACT_DETAILS_MESSAGE : undefined,
     category: v.category ? undefined : 'Choose a material category.',
-    description: v.description.trim().length >= 30 ? undefined : 'Describe the material in at least 30 characters.',
+    description:
+      v.description.trim().length < 30 ? 'Describe the material in at least 30 characters.' : containsContactDetails(v.description) ? CONTACT_DETAILS_MESSAGE : undefined,
+    qualitySpecifications: containsContactDetails(v.qualitySpecifications) ? CONTACT_DETAILS_MESSAGE : undefined,
     listedQuantity: !(listed > 0)
       ? 'Enter the quantity you have available.'
       : listed < committed && listing
@@ -274,6 +277,7 @@ export function ListingForm({ listing, seller, onSubmit, onCancel }: ListingForm
               value={values.qualitySpecifications}
               onChange={(e) => set('qualitySpecifications', e.target.value)}
               placeholder="e.g. Moisture 10–12%, sand minimised by slab drying"
+              error={errors.qualitySpecifications}
             />
             <fieldset>
               <legend className="mb-2 text-sm font-medium">

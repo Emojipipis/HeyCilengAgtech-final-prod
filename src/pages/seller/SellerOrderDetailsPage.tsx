@@ -239,7 +239,7 @@ export function SellerOrderDetailsPage() {
       >
         <div className="space-y-3">
           <Select label="Reason" options={DECLINE_REASONS} value={reason} onChange={(e) => setReason(e.target.value)} />
-          <Textarea label="Details (optional)" rows={2} value={details} onChange={(e) => setDetails(e.target.value)} hint="Shared with HeyCileng, who informs the buyer." />
+          <Textarea label="Details (optional)" rows={2} value={details} onChange={(e) => setDetails(e.target.value)} hint="Shared with HeyCileng only. The buyer is told the order was declined, not your details." />
           {actionError && <Alert tone="error">{actionError.message}</Alert>}
         </div>
       </ConfirmDialog>

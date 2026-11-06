@@ -196,15 +196,54 @@ export const supabaseSellerListingService: SellerListingService = {
 
 /* ------------------------------------------------------------------ Admin orders & logistics */
 
+/**
+ * Buyers and sellers are anonymous to each other ("HeyCileng seller" in order snapshots). Administrators
+ * read real seller names from profiles, plus the private reasons parties typed (RLS: admins only).
+ */
+async function forAdmin(orders: Order[], withNotes: boolean): Promise<ServiceResult<Order[]>> {
+  if (orders.length === 0) return ok(orders)
+  const sellerIds = [...new Set(orders.map((o) => o.sellerId))]
+  const [{ data: sellers, error }, notes] = await Promise.all([
+    supabase.from('profiles').select('id, business_name, full_name').in('id', sellerIds),
+    withNotes
+      ? supabase.from('order_private_notes').select('order_id, actor, title, note, at').in('order_id', orders.map((o) => o.id)).order('at')
+      : Promise.resolve({ data: [] as { order_id: string; actor: 'buyer' | 'seller'; title: string; note: string; at: string }[], error: null }),
+  ])
+  if (error) return fail(error)
+  if (notes.error) return fail(notes.error)
+  const name = new Map((sellers ?? []).map((p) => [p.id as string, (p.business_name || p.full_name) as string]))
+  return ok(
+    orders.map((o) => ({
+      ...o,
+      listing: { ...o.listing, sellerBusinessName: name.get(o.sellerId) ?? o.listing.sellerBusinessName },
+      partyNotes: withNotes ? (notes.data ?? []).filter((n) => n.order_id === o.id).map(({ actor, title, note, at }) => ({ actor, title, note, at })) : undefined,
+    })),
+  )
+}
+
+async function adminRpcThen(id: string, fn: string, args: Record<string, unknown>): Promise<ServiceResult<Order>> {
+  const { error } = await supabase.rpc(fn, args)
+  return error ? fail(error) : adminOne(id)
+}
+
+async function adminOne(id: string): Promise<ServiceResult<Order>> {
+  const r = await one('orders', id)
+  if (!r.ok) return r
+  const enriched = await forAdmin([r.data], true)
+  return enriched.ok ? ok(enriched.data[0]) : enriched
+}
+
 export const supabaseAdminOrderService: AdminOrderService = {
-  listAll() {
-    return loadOrders('orders', null).then((r) => (r.ok ? ok([...r.data].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))) : r))
+  async listAll() {
+    const r = await loadOrders('orders', null)
+    if (!r.ok) return r
+    return forAdmin([...r.data].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)), false)
   },
   get(id) {
-    return one('orders', id)
+    return adminOne(id)
   },
   assignDelivery(orderId, input) {
-    return rpcThen('orders', orderId, 'admin_assign_delivery', {
+    return adminRpcThen(orderId, 'admin_assign_delivery', {
       p_order: orderId,
       p_partner: input.partnerId,
       p_fee: input.fee,
@@ -215,7 +254,7 @@ export const supabaseAdminOrderService: AdminOrderService = {
     })
   },
   updateDelivery(orderId, input) {
-    return rpcThen('orders', orderId, 'admin_update_delivery', {
+    return adminRpcThen(orderId, 'admin_update_delivery', {
       p_order: orderId,
       p_status: input.status,
       p_note: input.note ?? null,
@@ -224,13 +263,13 @@ export const supabaseAdminOrderService: AdminOrderService = {
     })
   },
   markReadyForCollection(orderId, note) {
-    return rpcThen('orders', orderId, 'admin_collection', { p_order: orderId, p_action: 'ready', p_note: note ?? null })
+    return adminRpcThen(orderId, 'admin_collection', { p_order: orderId, p_action: 'ready', p_note: note ?? null })
   },
   markCollected(orderId) {
-    return rpcThen('orders', orderId, 'admin_collection', { p_order: orderId, p_action: 'collected' })
+    return adminRpcThen(orderId, 'admin_collection', { p_order: orderId, p_action: 'collected' })
   },
   cancel(orderId, reason) {
-    return rpcThen('orders', orderId, 'admin_cancel_order', { p_order: orderId, p_reason: reason })
+    return adminRpcThen(orderId, 'admin_cancel_order', { p_order: orderId, p_reason: reason })
   },
 }
 

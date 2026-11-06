@@ -183,6 +183,24 @@ export function AdminOrderDetailsPage() {
               <OrderTimeline events={o.timeline} />
             </CardBody>
           </Card>
+
+          {o.partyNotes && o.partyNotes.length > 0 && (
+            <Card>
+              <CardHeader title="Notes from the buyer and seller" description="Visible to HeyCileng only — the other party sees “Reason shared with HeyCileng”." />
+              <CardBody>
+                <ul className="space-y-3">
+                  {o.partyNotes.map((n) => (
+                    <li key={n.at + n.title} className="rounded-lg bg-surface-muted p-3 text-sm">
+                      <p className="text-xs font-semibold text-subtle">
+                        {n.actor === 'buyer' ? 'Buyer' : 'Seller'} · {n.title} · {formatDateTime(n.at)}
+                      </p>
+                      <p className="mt-1 text-muted">{n.note}</p>
+                    </li>
+                  ))}
+                </ul>
+              </CardBody>
+            </Card>
+          )}
         </div>
 
         <div className="space-y-6">
