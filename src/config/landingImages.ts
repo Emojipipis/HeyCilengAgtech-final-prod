@@ -50,7 +50,7 @@ export const LANDING_IMAGES = {
     peels_pulp: image('category-peels-pulp.jpg', 'Peels & pulp', 'Women peeling cassava, with peels piled on the ground', '800 × 600 px (4:3)'),
     cobs_bagasse: image('category-cobs-bagasse.jpg', 'Cobs & bagasse', 'Pile of shredded sugarcane bagasse', '800 × 600 px (4:3)'),
     tree_crop: image('category-tree-crop-byproducts.jpg', 'Tree crop by-products', 'Cocoa pod husks and coconut husks', '800 × 600 px (4:3)'),
-    processing: image('category-processing-byproducts.jpg', 'Processing by-products', 'Bran and oil cake from agro-processing', '800 × 600 px (4:3)'),
+    processing: image('category-processing-byproducts.jpg', 'Processing by-products', 'Heap of cassava peels left over from processing', '800 × 600 px (4:3)'),
     livestock: image('category-livestock-byproducts.jpg', 'Livestock by-products', 'Poultry farmer with young chickens in a wooden coop', '800 × 600 px (4:3)'),
     fibre: image('category-fibre-residues.jpg', 'Fibre residues', 'Plantain and sisal fibres drying', '800 × 600 px (4:3)'),
   } satisfies Record<CategoryId, LandingImage>,
