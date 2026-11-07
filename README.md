@@ -60,4 +60,4 @@ Semantic colour tokens (`bg-surface`, `text-muted`, `bg-primary`, `bg-action`, `
 
 ## Backend status
 
-Supabase authentication, database and Paystack payments are **fully connected **. The UI talks to service interfaces, so a real backend can replace the demo adapters without touching pages. there are no demo records.
+Supabase authentication, database and Paystack payments are fully connected. The UI talks to service interfaces, so a real backend can replace the demo adapters without touching pages. there are no demo records.
