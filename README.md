@@ -1,40 +1,56 @@
-# HeyCileng Agtech — Frontend
+# HeyCileng Agtech
 
-Agricultural by-product marketplace connecting suppliers (farmers, cooperatives, agro-processors) with businesses that use by-products as raw materials.
+An agricultural by-product marketplace connecting suppliers (farmers, cooperatives, and agro-processors) with businesses that use agricultural by-products as raw materials.
 
-This is a **frontend-only** build. It is separate from the original HeyCileng application.
+HeyCileng provides a digital marketplace where suppliers can showcase agricultural by-products and buyers can discover, purchase, and source raw materials more efficiently.
 
-## Stack
+The platform is built as a **full-stack application**, featuring a React frontend and a TypeScript backend, with Supabase powering backend infrastructure and Paystack handling payment processing.
 
-React · TypeScript · Vite · Tailwind CSS v4 · React Router · Lucide icons · Recharts · clsx · self-hosted Bricolage Grotesque + Public Sans.
+## Tech Stack
 
-## Getting started
+### Frontend
+- React
+- TypeScript
+- Vite
+- Tailwind CSS v4
+- React Router
+- Lucide Icons
+- Recharts
+- clsx
+- Bricolage Grotesque + Public Sans (self-hosted fonts)
+
+### Backend
+- TypeScript
+- Supabase (Backend Infrastructure)
+- Supabase Database
+- Paystack (Payment Integration)
+
+## Architecture
+
+HeyCileng follows a frontend-backend architecture:
+
+- **Frontend:** Handles the user interface, navigation, dashboards, and marketplace interactions.
+- **Backend:** Handles server-side business logic and application operations using TypeScript.
+- **Supabase:** Provides backend infrastructure and data management.
+- **Paystack:** Handles payment processing and transaction integration.
+
+## Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js
+- npm
+- Git
+
+### Installation
+
+Clone the repository:
 
 ```bash
-npm install
-cp .env.example .env.local   # optional: enable Demo Preview Mode
-npm run dev
-```
-
-| Script | Purpose |
-|---|---|
-| `npm run dev` | Start the dev server |
-| `npm run build` | Type-check and produce a production build |
-| `npm run preview` | Serve the production build locally |
-| `npm run lint` | Lint with oxlint |
-
-## Project layout
-
-```
-src/
-  config/      env + app configuration
-  styles/      Tailwind import, design tokens, light/dark themes
-  context/     React providers (theme, …)
-  hooks/       reusable hooks
-  lib/         pure utilities
-  components/  ui/ (design system), layout/, shared/
-  pages/       route-level pages
-```
+git clone <repository-url>
+cd <project-directory>
 
 Further folders (`types/`, `services/`, `fixtures/demo/`, `features/`) are added as each phase introduces them.
 
@@ -44,4 +60,4 @@ Semantic colour tokens (`bg-surface`, `text-muted`, `bg-primary`, `bg-action`, `
 
 ## Backend status
 
-Supabase authentication, database and Paystack payments are **not connected yet**. The UI talks to service interfaces, so a real backend can replace the demo adapters later without touching pages. Demo records are always labelled as illustrative.
+Supabase authentication, database and Paystack payments are **fully connected **. The UI talks to service interfaces, so a real backend can replace the demo adapters without touching pages. there are no demo records.
